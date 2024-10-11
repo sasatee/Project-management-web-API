@@ -13,6 +13,7 @@ using System.Text;
 
 namespace AuthenticationAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     //api/account
@@ -31,6 +32,7 @@ namespace AuthenticationAPI.Controllers
         }
 
         //api/account/register
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<string>> Register(RegisterDto registerDto)
         {
@@ -78,6 +80,7 @@ namespace AuthenticationAPI.Controllers
 
         }
         //api/account/login
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponseDto>> Login(LoginDto loginDto)
         {
@@ -98,7 +101,7 @@ namespace AuthenticationAPI.Controllers
                 });
 
             }
-            var result = await _userManager.CheckPasswordAsync(user, loginDto.Password); // vertify password authenticity
+            var result = await _userManager.CheckPasswordAsync(user, loginDto.Password); // verify password authenticity
 
 
             //if password not valid
@@ -156,7 +159,6 @@ namespace AuthenticationAPI.Controllers
             return tokenHandler.WriteToken(token);
         }
         //api/account/detail
-        [Authorize]
         [HttpGet("detail")]
         public async Task<ActionResult<UserDetailDto>> GetUserDetail()
             {
@@ -180,21 +182,32 @@ namespace AuthenticationAPI.Controllers
                 PhoneNumber = user.PhoneNumber,
                 PhoneNumberConfirmed = user.PhoneNumberConfirmed,
                 AccessFailedCount = user.AccessFailedCount,
+
             });
 
 
             }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDetailDto>>> GetUsers()
+        [HttpGet("details")]
+        public async Task<ActionResult<IEnumerable<UserDetailDto>>> GetAllUsers()
         {
             var users = await _userManager.Users.Select(u => new UserDetailDto
             {
                 Id = u.Id,
                 Email = u.Email,
                 FullName = u.Fullname,
-                Roles = _userManager.GetRolesAsync(u).Result.ToArray()
+               
             }).ToListAsync();
+
+            //fetch roles for each user after receiving the users 
+            foreach (var user in users)
+            {
+                var appUser = await _userManager.FindByIdAsync(user.Id!);
+                user.Roles = (await _userManager.GetRolesAsync(appUser!)).ToArray();
+
+            
+            
+            }
 
 
             return Ok(users);
