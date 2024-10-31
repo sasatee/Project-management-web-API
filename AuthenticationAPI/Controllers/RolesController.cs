@@ -8,46 +8,46 @@ using System.Linq;
 
 namespace AuthenticationAPI.Controllers
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("/api/[controller]")]
-    public class RolesController:ControllerBase
+    public class RolesController : ControllerBase
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<AppUser> _userManager;
 
-        public RolesController(RoleManager<IdentityRole> roleManger,UserManager<AppUser> userManager)
+        public RolesController(RoleManager<IdentityRole> roleManger, UserManager<AppUser> userManager)
         {
-            _roleManager = roleManger;  
+            _roleManager = roleManger;
             _userManager = userManager;
-            
+
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateRole([FromBody] CreateRoleDto createRoleDto)
         {
 
-            if (string.IsNullOrEmpty(createRoleDto.RoleName)) 
+            if (string.IsNullOrEmpty(createRoleDto.RoleName))
             {
-                return BadRequest(new {isSuccess=false,message = "Role name is required." });
+                return BadRequest(new { isSuccess = false, message = "Role name is required." });
 
-            
-            
+
+
             }
 
             var roleExist = await _roleManager.RoleExistsAsync(createRoleDto.RoleName);
 
             if (roleExist) {
-                return BadRequest(new {isSuccess=false, message="Role already exist." });
+                return BadRequest(new { isSuccess = false, message = "Role already exist." });
             }
             var roleResult = await _roleManager.CreateAsync(new IdentityRole(createRoleDto.RoleName));
 
             if (roleResult.Succeeded)
             {
-                return Ok(new {isSuccess=true,message = "Role has been created successfully" });
+                return Ok(new { isSuccess = true, message = "Role has been created successfully" });
             }
 
-            return BadRequest(new {isSuccess =false,message= "Role has not been created." });
+            return BadRequest(new { isSuccess = false, message = "Role has not been created." });
 
         }
         [HttpGet]
@@ -61,7 +61,7 @@ namespace AuthenticationAPI.Controllers
             var roleResponseDtos = new List<RoleReponseDto>();
 
 
-            foreach (var role in roles) 
+            foreach (var role in roles)
             {
                 //fetch users for each role asynchronously
                 var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name!);
@@ -97,6 +97,30 @@ namespace AuthenticationAPI.Controllers
             }
 
             return BadRequest((new { message = "Role not been deleted successfully", isSuccess = false }));
+
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRole([FromBody] CreateRoleDto createRoleDto, string id)
+        {
+            //find role by id
+            var role = await _roleManager.FindByIdAsync(id);
+
+            if (role is null)
+            {
+                return NotFound(new { isSuccess = false, message = "Role not found" });
+            }
+            //update the role's name 
+            role.Name = createRoleDto.RoleName;
+
+            var result = await _roleManager.UpdateAsync(role);
+
+            if (result.Succeeded)
+            {
+                return Ok(new { message = "Role updated successfully", isSuccess = true , role});
+            }
+
+            return BadRequest((new { message = "Role not been updated", isSuccess = false }));
 
         }
 

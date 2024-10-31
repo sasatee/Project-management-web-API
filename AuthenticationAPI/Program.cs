@@ -64,7 +64,7 @@ builder.Services.AddSwaggerGen(u =>
 
     u.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = @"Jwt Authorization Example: 'Bearer eyeyekbmembkembmebeb'",
+        Description = @"Jwt Authorization Example: 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsIm5hbWUiOiJzYXJ2YW0iLCJuYW1laWQiOiI4Zjk5ODgxZS05ZTc2LTQxNmQtOGJlZi0wZTI5ODQ5MmVkZWMiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjQ1MDAiLCJyb2xlIjoiQWRtaW4iLCJuYmYiOjE3MjkxMzM2OTksImV4cCI6MTcyOTIyMDA5OSwiaWF0IjoxNzI5MTMzNjk5fQ.mNDos14BiLimZFbeG6pqWJs8seZ6Od4ucn9JzOZlJ9E'",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,

@@ -102,6 +102,7 @@ namespace AuthenticationAPI.Controllers
 
             }
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password); // verify password authenticity
+            var role = await _userManager.GetRolesAsync(user);
 
 
             //if password not valid
@@ -114,7 +115,9 @@ namespace AuthenticationAPI.Controllers
             return Ok(new AuthResponseDto() {
                 Token = token,
                 Message = "Sucessfully Login.",
-                isSuccess = true
+                isSuccess = true,
+                Roles = role.ToList() // include roles in the response 
+              
 
 
             });
@@ -187,10 +190,27 @@ namespace AuthenticationAPI.Controllers
 
 
             }
-
+        /// <summary>
+        /// Retrieves a list of all users with their details.
+        /// </summary>
+        /// <remarks>
+        /// Admin has authorized access to check all available accounts.
+        /// </remarks>
+        /// <response code="200">Returns the list of all users.</response>
+        /// <response code="403">Forbidden. Only Admin has access to this resource.</response>
         [HttpGet("details")]
+        [Authorize(Roles="Admin")]
         public async Task<ActionResult<IEnumerable<UserDetailDto>>> GetAllUsers()
         {
+
+            //check if user is in the Admin role
+
+            var isAdmin = User.IsInRole("Admin");
+
+            if (!isAdmin)
+            {
+                return Forbid();
+            }
             var users = await _userManager.Users.Select(u => new UserDetailDto
             {
                 Id = u.Id,
@@ -210,7 +230,13 @@ namespace AuthenticationAPI.Controllers
             }
 
 
-            return Ok(users);
+
+
+            return Ok(new
+            {
+                Message = "Admin has authorized to check all accounts available",
+                Users = users
+            });
         }
     }
 
