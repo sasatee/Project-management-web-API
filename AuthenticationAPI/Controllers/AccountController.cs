@@ -60,7 +60,7 @@ namespace AuthenticationAPI.Controllers
 
             if (registerDto.Roles is null)
             {
-                await _userManager.AddToRoleAsync(user, "User");
+                await _userManager.AddToRoleAsync(user, "User"); //set role as user 
 
             }
             else

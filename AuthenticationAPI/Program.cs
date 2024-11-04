@@ -9,6 +9,20 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:5173")
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
+
+
+
 //
 var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
@@ -102,7 +116,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthentication();
+app.UseCors("AllowFrontend");
+app.UseAuthentication();    
 app.UseAuthorization();
 
 app.UseAuthorization();
