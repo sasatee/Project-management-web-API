@@ -1,14 +1,58 @@
 ﻿using AuthenticationAPI.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Payroll.Model;
 
 namespace AuthenticationAPI.Data
 {
-    public class ApplicationDbContext:IdentityDbContext<AppUser>
+    public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options):base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
+        }
+
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<JobTitle> JobTitles { get; set; }
+        public DbSet<Attendance> Attendances { get; set; }
+        public DbSet<Payrolls> Payrolls { get; set; }
+        public DbSet<Leave> Leaves { get; set; }
+        public DbSet<PerformanceReview> PerformanceReviews { get; set; }
+        public DbSet<Training> Trainings { get; set; }
+        public DbSet<EmployeeTraining> EmployeeTrainings { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
             
+            modelBuilder.Entity<Attendance>()
+                .Property(a => a.OvertimeHours)
+                .HasPrecision(18, 2);
+
+            
+            modelBuilder.Entity<JobTitle>()
+                .Property(j => j.BaseSalary)
+                .HasPrecision(18, 2);
+
+            
+            modelBuilder.Entity<Payrolls>()
+                .Property(p => p.BasicSalary)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Payrolls>()
+                .Property(p => p.Allowances)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Payrolls>()
+                .Property(p => p.Deductions)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Payrolls>()
+                .Property(p => p.NetPay)
+                .HasPrecision(18, 2);
         }
     }
 }
