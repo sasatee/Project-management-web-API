@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace AuthenticationAPI.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [ApiController]
     [Route("/api/[controller]")]
     public class RolesController : ControllerBase
