@@ -16,9 +16,9 @@ namespace AuthenticationAPI.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<AppUser> _userManager;
 
-        public RolesController(RoleManager<IdentityRole> roleManger, UserManager<AppUser> userManager)
+        public RolesController(RoleManager<IdentityRole> roleManager, UserManager<AppUser> userManager)
         {
-            _roleManager = roleManger;
+            _roleManager = roleManager;
             _userManager = userManager;
 
         }
