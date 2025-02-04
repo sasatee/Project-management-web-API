@@ -22,7 +22,8 @@ namespace AuthenticationAPI.Data
         public DbSet<EmployeeTraining> EmployeeTrainings { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
-
+        public DbSet<LeaveAllocation> LeaveAllocations { get; set; }
+        public DbSet<LeaveRequest> LeaveRequests { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

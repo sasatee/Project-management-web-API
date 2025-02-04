@@ -1,4 +1,5 @@
 using AuthenticationAPI.Data;
+using AuthenticationAPI.IRepository.Repository;
 using AuthenticationAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -68,7 +69,7 @@ builder.Services.AddAuthentication(option =>
 
 
 
-
+builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestAllocationRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
