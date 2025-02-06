@@ -44,7 +44,8 @@ namespace AuthenticationAPI.Controllers
             var user = new AppUser
             {
                 Email = registerDto.Email,
-                Fullname = registerDto.FullName,
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
                 UserName = registerDto.Email
 
             };
@@ -134,7 +135,8 @@ namespace AuthenticationAPI.Controllers
             List<Claim> claims =
             [
                 new (JwtRegisteredClaimNames.Email,user.Email ?? ""),
-                new(JwtRegisteredClaimNames.Name,user.Fullname ?? ""),
+                new(JwtRegisteredClaimNames.Name,user.FirstName ?? ""),
+                  new(JwtRegisteredClaimNames.Name,user.LastName ?? ""),
                 new(JwtRegisteredClaimNames.NameId,user.Id ?? ""),
                 new(JwtRegisteredClaimNames.Aud,_configuration.GetSection("JWTSetting").GetSection("ValidAudience").Value!),
                 new(JwtRegisteredClaimNames.Iss,_configuration.GetSection("JWTSetting").GetSection("ValidIssuer").Value!)
@@ -180,7 +182,8 @@ namespace AuthenticationAPI.Controllers
             {
                 Id = user.Id,
                 Email = user.Email,
-                FullName = user.Fullname,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 Roles = [.. await _userManager.GetRolesAsync(user)],
                 PhoneNumber = user.PhoneNumber,
                 PhoneNumberConfirmed = user.PhoneNumberConfirmed,
@@ -215,7 +218,8 @@ namespace AuthenticationAPI.Controllers
             {
                 Id = u.Id,
                 Email = u.Email,
-                FullName = u.Fullname,
+                FirstName = u.FirstName,
+                LastName = u.LastName
                
             }).ToListAsync();
 

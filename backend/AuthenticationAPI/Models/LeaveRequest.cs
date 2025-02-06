@@ -2,7 +2,7 @@ using Payroll.Model;
 
 public class LeaveRequest{
 
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public DateTime DateRequested { get; set; }
@@ -12,10 +12,11 @@ public class LeaveRequest{
     public string ApprovedById { get; set; }
 
     
+    public Guid LeaveTypeId { get; set; }
     public LeaveType LeaveType { get; set; }
-    public int LeaveTypeId { get; set; }
+    
 
     public ICollection<Employee> Employees { get; set; } = new List<Employee> { };
-    public int RequestingEmployeeId { get; set; }
+    public Guid RequestingEmployeeId { get; set; }
 
 }

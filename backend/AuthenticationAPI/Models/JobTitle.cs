@@ -2,7 +2,7 @@
 {
     public class JobTitle
     {
-        public int JobTitleId { get; set; }
+        public Guid Id { get; set; }
         public string Title { get; set; }
         public decimal BaseSalary { get; set; }
         public int Grade { get; set; }

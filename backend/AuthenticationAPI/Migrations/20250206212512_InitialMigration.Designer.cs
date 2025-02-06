@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthenticationAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250202025433_s")]
-    partial class s
+    [Migration("20250206212512_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,6 +37,9 @@ namespace AuthenticationAPI.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("DateJoined")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -44,7 +47,10 @@ namespace AuthenticationAPI.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Fullname")
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -95,11 +101,12 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("LeaveAllocation", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -108,11 +115,11 @@ namespace AuthenticationAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EmployeeId1")
-                        .HasColumnType("int");
+                    b.Property<Guid>("EmployeeId1")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("LeaveTypeId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("LeaveTypeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("NumberOfDays")
                         .HasColumnType("int");
@@ -121,6 +128,8 @@ namespace AuthenticationAPI.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("EmployeeId1");
 
@@ -131,11 +140,12 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("LeaveRequest", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool?>("Approved")
                         .HasColumnType("bit");
@@ -153,20 +163,22 @@ namespace AuthenticationAPI.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("LeaveTypeId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("LeaveTypeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("RequestComments")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RequestingEmployeeId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("RequestingEmployeeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("LeaveTypeId");
 
@@ -175,11 +187,9 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("LeaveType", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -334,11 +344,9 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("Payroll.Model.Attendance", b =>
                 {
-                    b.Property<int>("AttendanceId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttendanceId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<TimeSpan>("CheckInTime")
                         .HasColumnType("time");
@@ -349,14 +357,14 @@ namespace AuthenticationAPI.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("OvertimeHours")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("AttendanceId");
+                    b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
 
@@ -365,11 +373,9 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("Payroll.Model.AuditLog", b =>
                 {
-                    b.Property<int>("AuditLogId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuditLogId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Action")
                         .IsRequired()
@@ -382,18 +388,16 @@ namespace AuthenticationAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("AuditLogId");
+                    b.HasKey("Id");
 
                     b.ToTable("AuditLogs");
                 });
 
             modelBuilder.Entity("Payroll.Model.Department", b =>
                 {
-                    b.Property<int>("DepartmentId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DepartmentId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DepartmentName")
                         .IsRequired()
@@ -403,18 +407,16 @@ namespace AuthenticationAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("DepartmentId");
+                    b.HasKey("Id");
 
                     b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("Payroll.Model.Employee", b =>
                 {
-                    b.Property<int>("EmployeeId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -423,8 +425,8 @@ namespace AuthenticationAPI.Migrations
                     b.Property<DateTime>("DateOfJoining")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -434,21 +436,21 @@ namespace AuthenticationAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("JobTitleId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("JobTitleId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("LeaveRequestId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("LeaveRequestId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("EmployeeId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
 
@@ -461,21 +463,22 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("Payroll.Model.EmployeeTraining", b =>
                 {
-                    b.Property<int>("EmployeeTrainingId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeTrainingId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TrainingId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("EmployeeId1")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("EmployeeTrainingId");
+                    b.Property<Guid>("TrainingId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasIndex("EmployeeId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId1");
 
                     b.HasIndex("TrainingId");
 
@@ -484,11 +487,9 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("Payroll.Model.JobTitle", b =>
                 {
-                    b.Property<int>("JobTitleId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("JobTitleId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("BaseSalary")
                         .HasPrecision(18, 2)
@@ -501,21 +502,19 @@ namespace AuthenticationAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("JobTitleId");
+                    b.HasKey("Id");
 
                     b.ToTable("JobTitles");
                 });
 
             modelBuilder.Entity("Payroll.Model.Leave", b =>
                 {
-                    b.Property<int>("LeaveId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LeaveId"));
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
@@ -531,7 +530,7 @@ namespace AuthenticationAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("LeaveId");
+                    b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
 
@@ -540,17 +539,15 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("Payroll.Model.Notification", b =>
                 {
-                    b.Property<int>("NotificationId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
@@ -559,7 +556,7 @@ namespace AuthenticationAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("NotificationId");
+                    b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
 
@@ -568,11 +565,9 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("Payroll.Model.Payrolls", b =>
                 {
-                    b.Property<int>("PayrollId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PayrollId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Allowances")
                         .HasPrecision(18, 2)
@@ -586,8 +581,8 @@ namespace AuthenticationAPI.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("NetPay")
                         .HasPrecision(18, 2)
@@ -596,7 +591,7 @@ namespace AuthenticationAPI.Migrations
                     b.Property<DateTime>("PayDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("PayrollId");
+                    b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
 
@@ -605,18 +600,16 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("Payroll.Model.PerformanceReview", b =>
                 {
-                    b.Property<int>("PerformanceReviewId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PerformanceReviewId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Comments")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ReviewDate")
                         .HasColumnType("datetime2");
@@ -624,7 +617,7 @@ namespace AuthenticationAPI.Migrations
                     b.Property<int>("Score")
                         .HasColumnType("int");
 
-                    b.HasKey("PerformanceReviewId");
+                    b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
 
@@ -633,11 +626,9 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("Payroll.Model.Training", b =>
                 {
-                    b.Property<int>("TrainingId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TrainingId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
@@ -649,13 +640,17 @@ namespace AuthenticationAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("TrainingId");
+                    b.HasKey("Id");
 
                     b.ToTable("Trainings");
                 });
 
             modelBuilder.Entity("LeaveAllocation", b =>
                 {
+                    b.HasOne("AuthenticationAPI.Models.AppUser", null)
+                        .WithMany("LeaveAllocations")
+                        .HasForeignKey("AppUserId");
+
                     b.HasOne("Payroll.Model.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId1")
@@ -675,9 +670,15 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("LeaveRequest", b =>
                 {
+                    b.HasOne("AuthenticationAPI.Models.AppUser", null)
+                        .WithMany("LeaveRequests")
+                        .HasForeignKey("AppUserId");
+
                     b.HasOne("LeaveType", "LeaveType")
                         .WithMany()
-                        .HasForeignKey("LeaveTypeId");
+                        .HasForeignKey("LeaveTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("LeaveType");
                 });
@@ -771,7 +772,7 @@ namespace AuthenticationAPI.Migrations
                 {
                     b.HasOne("Payroll.Model.Employee", "Employee")
                         .WithMany()
-                        .HasForeignKey("EmployeeId")
+                        .HasForeignKey("EmployeeId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -828,6 +829,13 @@ namespace AuthenticationAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("AuthenticationAPI.Models.AppUser", b =>
+                {
+                    b.Navigation("LeaveAllocations");
+
+                    b.Navigation("LeaveRequests");
                 });
 
             modelBuilder.Entity("LeaveRequest", b =>

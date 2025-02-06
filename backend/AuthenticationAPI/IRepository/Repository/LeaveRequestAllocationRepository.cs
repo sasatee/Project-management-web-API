@@ -15,7 +15,7 @@ namespace AuthenticationAPI.IRepository.Repository
             _context = context;
         }
 
-        public Task ChangeApprovalStatus(int leaveRequestId, bool approved)
+        public Task ChangeApprovalStatus(Guid leaveRequestId, bool approved)
         {
             throw new NotImplementedException();
         }
@@ -27,12 +27,12 @@ namespace AuthenticationAPI.IRepository.Repository
             return leaveRequest;
         }
 
-        public Task DeleteAsync(int id)
+        public Task DeleteAsync(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> Exists(int id)
+        public Task<bool> Exists(Guid id)
         {
             throw new NotImplementedException();
         }
@@ -42,10 +42,11 @@ namespace AuthenticationAPI.IRepository.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<LeaveRequest> GetByIdAsync(int id)
+        public async Task<LeaveRequest> GetByIdAsync(Guid id)
         {
 
 
+            
             return await _context.LeaveRequests
             .Include(q => q.LeaveType)
             .FirstOrDefaultAsync(q => q.Id == id);

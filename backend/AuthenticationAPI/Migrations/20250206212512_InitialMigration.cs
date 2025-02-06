@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AuthenticationAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class model : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,7 +30,9 @@ namespace AuthenticationAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Fullname = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateJoined = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -55,59 +57,70 @@ namespace AuthenticationAPI.Migrations
                 name: "AuditLogs",
                 columns: table => new
                 {
-                    AuditLogId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Action = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ActionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PerformedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AuditLogs", x => x.AuditLogId);
+                    table.PrimaryKey("PK_AuditLogs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Departments",
                 columns: table => new
                 {
-                    DepartmentId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DepartmentName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     HeadOfDepartment = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Departments", x => x.DepartmentId);
+                    table.PrimaryKey("PK_Departments", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "JobTitles",
                 columns: table => new
                 {
-                    JobTitleId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BaseSalary = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Grade = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_JobTitles", x => x.JobTitleId);
+                    table.PrimaryKey("PK_JobTitles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LeaveType",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DefaultDays = table.Column<int>(type: "int", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LeaveType", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Trainings",
                 columns: table => new
                 {
-                    TrainingId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TrainingName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Trainings", x => x.TrainingId);
+                    table.PrimaryKey("PK_Trainings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -217,57 +230,93 @@ namespace AuthenticationAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LeaveRequests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateRequested = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RequestComments = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Approved = table.Column<bool>(type: "bit", nullable: true),
+                    Cancelled = table.Column<bool>(type: "bit", nullable: false),
+                    ApprovedById = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LeaveTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequestingEmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LeaveRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LeaveRequests_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_LeaveRequests_LeaveType_LeaveTypeId",
+                        column: x => x.LeaveTypeId,
+                        principalTable: "LeaveType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Employees",
                 columns: table => new
                 {
-                    EmployeeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateOfJoining = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DepartmentId = table.Column<int>(type: "int", nullable: false),
-                    JobTitleId = table.Column<int>(type: "int", nullable: false)
+                    DepartmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    JobTitleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LeaveRequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Employees", x => x.EmployeeId);
+                    table.PrimaryKey("PK_Employees", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Employees_Departments_DepartmentId",
                         column: x => x.DepartmentId,
                         principalTable: "Departments",
-                        principalColumn: "DepartmentId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Employees_JobTitles_JobTitleId",
                         column: x => x.JobTitleId,
                         principalTable: "JobTitles",
-                        principalColumn: "JobTitleId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Employees_LeaveRequests_LeaveRequestId",
+                        column: x => x.LeaveRequestId,
+                        principalTable: "LeaveRequests",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Attendances",
                 columns: table => new
                 {
-                    AttendanceId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CheckInTime = table.Column<TimeSpan>(type: "time", nullable: false),
                     CheckOutTime = table.Column<TimeSpan>(type: "time", nullable: false),
                     OvertimeHours = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false)
+                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Attendances", x => x.AttendanceId);
+                    table.PrimaryKey("PK_Attendances", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Attendances_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -275,25 +324,60 @@ namespace AuthenticationAPI.Migrations
                 name: "EmployeeTrainings",
                 columns: table => new
                 {
-                    EmployeeTrainingId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
-                    TrainingId = table.Column<int>(type: "int", nullable: false)
+                    EmployeeId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TrainingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmployeeTrainings", x => x.EmployeeTrainingId);
+                    table.PrimaryKey("PK_EmployeeTrainings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_EmployeeTrainings_Employees_EmployeeId",
-                        column: x => x.EmployeeId,
+                        name: "FK_EmployeeTrainings_Employees_EmployeeId1",
+                        column: x => x.EmployeeId1,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EmployeeTrainings_Trainings_TrainingId",
                         column: x => x.TrainingId,
                         principalTable: "Trainings",
-                        principalColumn: "TrainingId",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LeaveAllocations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NumberOfDays = table.Column<int>(type: "int", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Period = table.Column<int>(type: "int", nullable: false),
+                    EmployeeId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EmployeeId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LeaveTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LeaveAllocations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LeaveAllocations_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_LeaveAllocations_Employees_EmployeeId1",
+                        column: x => x.EmployeeId1,
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LeaveAllocations_LeaveType_LeaveTypeId",
+                        column: x => x.LeaveTypeId,
+                        principalTable: "LeaveType",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -301,22 +385,21 @@ namespace AuthenticationAPI.Migrations
                 name: "Leaves",
                 columns: table => new
                 {
-                    LeaveId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LeaveType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false)
+                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Leaves", x => x.LeaveId);
+                    table.PrimaryKey("PK_Leaves", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Leaves_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -324,21 +407,20 @@ namespace AuthenticationAPI.Migrations
                 name: "Notifications",
                 columns: table => new
                 {
-                    NotificationId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsRead = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false)
+                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Notifications", x => x.NotificationId);
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Notifications_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -346,23 +428,22 @@ namespace AuthenticationAPI.Migrations
                 name: "Payrolls",
                 columns: table => new
                 {
-                    PayrollId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PayDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BasicSalary = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Allowances = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Deductions = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     NetPay = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false)
+                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Payrolls", x => x.PayrollId);
+                    table.PrimaryKey("PK_Payrolls", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Payrolls_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -370,21 +451,20 @@ namespace AuthenticationAPI.Migrations
                 name: "PerformanceReviews",
                 columns: table => new
                 {
-                    PerformanceReviewId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ReviewDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Comments = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Score = table.Column<int>(type: "int", nullable: false),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false)
+                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PerformanceReviews", x => x.PerformanceReviewId);
+                    table.PrimaryKey("PK_PerformanceReviews", x => x.Id);
                     table.ForeignKey(
                         name: "FK_PerformanceReviews_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -443,14 +523,44 @@ namespace AuthenticationAPI.Migrations
                 column: "JobTitleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmployeeTrainings_EmployeeId",
+                name: "IX_Employees_LeaveRequestId",
+                table: "Employees",
+                column: "LeaveRequestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmployeeTrainings_EmployeeId1",
                 table: "EmployeeTrainings",
-                column: "EmployeeId");
+                column: "EmployeeId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmployeeTrainings_TrainingId",
                 table: "EmployeeTrainings",
                 column: "TrainingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeaveAllocations_AppUserId",
+                table: "LeaveAllocations",
+                column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeaveAllocations_EmployeeId1",
+                table: "LeaveAllocations",
+                column: "EmployeeId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeaveAllocations_LeaveTypeId",
+                table: "LeaveAllocations",
+                column: "LeaveTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeaveRequests_AppUserId",
+                table: "LeaveRequests",
+                column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeaveRequests_LeaveTypeId",
+                table: "LeaveRequests",
+                column: "LeaveTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Leaves_EmployeeId",
@@ -501,6 +611,9 @@ namespace AuthenticationAPI.Migrations
                 name: "EmployeeTrainings");
 
             migrationBuilder.DropTable(
+                name: "LeaveAllocations");
+
+            migrationBuilder.DropTable(
                 name: "Leaves");
 
             migrationBuilder.DropTable(
@@ -516,9 +629,6 @@ namespace AuthenticationAPI.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Trainings");
 
             migrationBuilder.DropTable(
@@ -529,6 +639,15 @@ namespace AuthenticationAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "JobTitles");
+
+            migrationBuilder.DropTable(
+                name: "LeaveRequests");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "LeaveType");
         }
     }
 }

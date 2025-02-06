@@ -2,7 +2,7 @@
 {
     public class Training
     {
-        public int TrainingId { get; set; }
+        public Guid Id { get; set; }
         public string TrainingName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

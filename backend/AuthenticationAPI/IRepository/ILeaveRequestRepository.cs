@@ -3,10 +3,10 @@ public interface ILeaveRequestRepository
 
     Task<List<LeaveRequest>> GetAllAsync();
     Task<List<LeaveRequest>> GetLeaveRequestsByEmployee(string employeeId);
-    Task<LeaveRequest> GetByIdAsync(int id);
+    Task<LeaveRequest> GetByIdAsync(Guid id);
     Task<LeaveRequest> CreateAsync(LeaveRequest leaveRequest);
     Task UpdateAsync(LeaveRequest leaveRequest);
-    Task DeleteAsync(int id);
-    Task<bool> Exists(int id);
-    Task ChangeApprovalStatus(int leaveRequestId, bool approved);
+    Task DeleteAsync(Guid id);
+    Task<bool> Exists(Guid id);
+    Task ChangeApprovalStatus(Guid leaveRequestId, bool approved);
 }

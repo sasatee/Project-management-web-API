@@ -2,16 +2,16 @@
 {
     public class Employee
     {
-        public int EmployeeId { get; set; }
+        public Guid  Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Address { get; set; }
         public DateTime DateOfJoining { get; set; }
-        public int DepartmentId { get; set; }
+        public Guid DepartmentId { get; set; }
         public Department Department { get; set; }
-        public int JobTitleId { get; set; }
+        public Guid JobTitleId { get; set; }
         public JobTitle JobTitle { get; set; }
         public ICollection<Attendance> Attendances { get; set; }
         public ICollection<Leave> Leaves { get; set; }
