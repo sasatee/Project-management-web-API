@@ -9,7 +9,7 @@ public class LeaveRequest{
     public string RequestComments { get; set; }
     public bool? Approved { get; set; }
     public bool Cancelled { get; set; }
-    public string ApprovedById { get; set; }
+    public string? ApprovedById { get; set; }
 
     
     public Guid LeaveTypeId { get; set; }

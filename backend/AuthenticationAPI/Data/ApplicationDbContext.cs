@@ -24,6 +24,7 @@ namespace AuthenticationAPI.Data
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<LeaveAllocation> LeaveAllocations { get; set; }
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
+        public DbSet<LeaveType> LeaveType { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

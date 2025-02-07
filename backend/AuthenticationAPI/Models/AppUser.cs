@@ -9,5 +9,6 @@ namespace AuthenticationAPI.Models
         public DateTime DateJoined { get; set; }
         public virtual ICollection<LeaveAllocation> LeaveAllocations { get; set; } =  new List<LeaveAllocation>{};
         public virtual ICollection<LeaveRequest> LeaveRequests { get; set; } = new List<LeaveRequest>{};
+
     }
 }

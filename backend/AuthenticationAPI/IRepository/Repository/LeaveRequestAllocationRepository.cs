@@ -37,9 +37,13 @@ namespace AuthenticationAPI.IRepository.Repository
             throw new NotImplementedException();
         }
 
-        public Task<List<LeaveRequest>> GetAllAsync()
+        public async Task<List<LeaveRequest>> GetAllAsync()
         {
-            throw new NotImplementedException();
+
+            return await _context.LeaveRequests
+                .Include(q=>q.LeaveType)
+                .ToListAsync();
+            
         }
 
         public async Task<LeaveRequest> GetByIdAsync(Guid id)
@@ -49,12 +53,15 @@ namespace AuthenticationAPI.IRepository.Repository
             
             return await _context.LeaveRequests
             .Include(q => q.LeaveType)
-            .FirstOrDefaultAsync(q => q.Id == id);
+            .FirstOrDefault(q => q.Id == id);
         }
 
-        public Task<List<LeaveRequest>> GetLeaveRequestsByEmployee(string employeeId)
+        public async Task<List<LeaveRequest>> GetLeaveRequestsByEmployee(string employeeId)
         {
-            throw new NotImplementedException();
+            return await _context.LeaveRequests
+                .Where(q=>q.RequestingEmployeeId.ToString() == employeeId)
+                .Include(q => q.LeaveType)
+                .ToListAsync();
         }
 
         public Task UpdateAsync(LeaveRequest leaveRequest)
