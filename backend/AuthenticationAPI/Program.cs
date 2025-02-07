@@ -32,8 +32,11 @@ var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
 // Add services to the container.
 //add database 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-          options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//          options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+          options.UseSqlite("Data Source = Hr.db"));
 
 
 //add identity role in DI container
