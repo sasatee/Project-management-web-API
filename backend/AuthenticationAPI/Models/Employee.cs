@@ -14,7 +14,7 @@
         public Guid JobTitleId { get; set; }
         public JobTitle JobTitle { get; set; }
         public ICollection<Attendance> Attendances { get; set; }
-        public ICollection<Leave> Leaves { get; set; }
+        
         public ICollection<PerformanceReview> PerformanceReviews { get; set; }
         public ICollection<Payrolls> Payrolls { get; set; }
     }

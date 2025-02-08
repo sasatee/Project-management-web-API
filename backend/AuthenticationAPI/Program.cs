@@ -12,38 +12,40 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add CORS policy
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend",
-        builder =>
-        {
-            builder.WithOrigins("http://localhost:5173")
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
-        });
-});
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowFrontend",
+//        builder =>
+//        {
+//            builder.WithOrigins("http://localhost:5173")
+//                   .AllowAnyHeader()
+//                   .AllowAnyMethod();
+//        });
+//});
 
 
 
-//
 var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
 
-//
-
 // Add services to the container.
+
+
 //add database 
+//sql server database
 //builder.Services.AddDbContext<ApplicationDbContext>(options =>
 //          options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-          options.UseSqlite("Data Source = Hrdummy.db"));
+//sql lite 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+      options.UseSqlite("Data Source = Hrdummy.db"));
 
 
 //add identity role in DI container
 builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
 
 //add authentication in DI container
 builder.Services.AddAuthentication(option =>
