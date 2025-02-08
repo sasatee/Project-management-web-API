@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthenticationAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250208050026_InitialCreateSqlite")]
-    partial class InitialCreateSqlite
+    [Migration("20250208102718_RemoveLeaveTable")]
+    partial class RemoveLeaveTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -138,7 +138,10 @@ namespace AuthenticationAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AppUserId")
+                    b.Property<Guid?>("AppUserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AppUserId1")
                         .HasColumnType("TEXT");
 
                     b.Property<bool?>("Approved")
@@ -171,7 +174,7 @@ namespace AuthenticationAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
+                    b.HasIndex("AppUserId1");
 
                     b.HasIndex("LeaveTypeId");
 
@@ -522,7 +525,7 @@ namespace AuthenticationAPI.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Leaves");
+                    b.ToTable("Leave");
                 });
 
             modelBuilder.Entity("Payroll.Model.Notification", b =>
@@ -658,15 +661,17 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("LeaveRequest", b =>
                 {
-                    b.HasOne("AuthenticationAPI.Models.AppUser", null)
+                    b.HasOne("AuthenticationAPI.Models.AppUser", "AppUser")
                         .WithMany("LeaveRequests")
-                        .HasForeignKey("AppUserId");
+                        .HasForeignKey("AppUserId1");
 
                     b.HasOne("LeaveType", "LeaveType")
                         .WithMany()
                         .HasForeignKey("LeaveTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AppUser");
 
                     b.Navigation("LeaveType");
                 });

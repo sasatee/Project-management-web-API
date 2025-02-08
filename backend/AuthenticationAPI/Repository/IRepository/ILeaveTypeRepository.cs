@@ -4,9 +4,11 @@
     {
 
         Task<LeaveType> GetByIdAsync(Guid id);
+
+        Task<IEnumerable<LeaveType>> GetAllAsync();
         Task<LeaveType> CreateAsync(LeaveType LeaveType);
-        Task UpdateAsync(LeaveType leaveType);
-        Task DeleteAsync(Guid id);
+
+        Task<LeaveType> FindLeaveType(Guid id);
 
 
     }

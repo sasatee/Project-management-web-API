@@ -1,11 +1,13 @@
 ﻿using AuthenticationAPI.Data;
 using AuthenticationAPI.IRepository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthenticationAPI.Repository
 {
     public class LeaveTypeRepository : ILeaveTypeRepository
     {
         private readonly ApplicationDbContext _context;
+
         public LeaveTypeRepository(ApplicationDbContext context)
         {
             _context = context;
@@ -23,19 +25,24 @@ namespace AuthenticationAPI.Repository
             return LeaveType;
         }
 
-        public Task DeleteAsync(Guid id)
+        public  async Task<IEnumerable<LeaveType>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.LeaveType.ToListAsync();
         }
 
-        public Task<LeaveType> GetByIdAsync(Guid id)
+
+        public async Task<LeaveType> FindLeaveType(Guid id)
         {
-            throw new NotImplementedException();
+            
+
+            return await _context.LeaveType.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Task UpdateAsync(LeaveType leaveType)
+        public async Task<LeaveType> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _context.LeaveType.FindAsync(id);
         }
+
+      
     }
 }

@@ -9,4 +9,5 @@ public interface ILeaveRequestRepository
     Task DeleteAsync(Guid id);
     Task<bool> Exists(Guid id);
     Task ChangeApprovalStatus(Guid leaveRequestId, bool approved);
+    
 }

@@ -37,7 +37,7 @@ var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 //          options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
-          options.UseSqlite("Data Source = Hr.db"));
+          options.UseSqlite("Data Source = Hrdummy.db"));
 
 
 //add identity role in DI container
@@ -73,7 +73,7 @@ builder.Services.AddAuthentication(option =>
 
 
 
-builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestAllocationRepository>();
+builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
 
 builder.Services.AddControllers();

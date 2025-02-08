@@ -4,17 +4,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuthenticationAPI.Repository
 {
-    public class LeaveRequestAllocationRepository : ILeaveRequestRepository
+    public class LeaveRequestRepository : ILeaveRequestRepository
     {
         private readonly ApplicationDbContext _context;
-        public LeaveRequestAllocationRepository(ApplicationDbContext context)
+        public LeaveRequestRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public Task ChangeApprovalStatus(Guid leaveRequestId, bool approved)
+        public  async Task ChangeApprovalStatus(Guid leaveRequestId, bool approved)
         {
-            throw new NotImplementedException();
+
+            var leaveRequest = await GetByIdAsync(leaveRequestId);
+            leaveRequest.Approved = approved;
+            await UpdateAsync(leaveRequest);
+
         }
 
         public async Task<LeaveRequest> CreateAsync(LeaveRequest leaveRequest)
@@ -29,11 +33,12 @@ namespace AuthenticationAPI.Repository
             throw new NotImplementedException();
         }
 
-        public Task<bool> Exists(Guid id)
+        public async Task<bool> Exists(Guid id)
         {
-            throw new NotImplementedException();
+            return await _context.LeaveRequests.AnyAsync(x => x.Id == id);
         }
 
+       
         public async Task<List<LeaveRequest>> GetAllAsync()
         {
 
@@ -53,16 +58,19 @@ namespace AuthenticationAPI.Repository
         }
 
         public async Task<List<LeaveRequest>> GetLeaveRequestsByEmployee(string employeeId)
-        {
-            return await _context.LeaveRequests
-                .Where(q => q.RequestingEmployeeId.ToString() == employeeId)
+        {  
+                 var requests = await _context.LeaveRequests
+                .Where(q => q.AppUserId.ToString() == employeeId)
                 .Include(q => q.LeaveType)
                 .ToListAsync();
+
+            return requests;
         }
 
-        public Task UpdateAsync(LeaveRequest leaveRequest)
+        public async Task UpdateAsync(LeaveRequest leaveRequest)
         {
-            throw new NotImplementedException();
+            _context.Entry(leaveRequest).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }

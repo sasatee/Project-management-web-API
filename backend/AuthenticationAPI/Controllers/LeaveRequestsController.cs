@@ -1,4 +1,5 @@
-﻿using AuthenticationAPI.Models;
+﻿using AuthenticationAPI.IRepository.IRepository;
+using AuthenticationAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
@@ -12,13 +13,16 @@ namespace AuthenticationAPI.Controllers
 
     {
 
-        private readonly ILeaveRequestRepository _repository;
+        private readonly ILeaveRequestRepository _leaveRequestrepository;
+        private readonly ILeaveTypeRepository _leaveTypeRepository;
         private readonly UserManager<AppUser> _userManager;
-        public LeaveRequestsController(ILeaveRequestRepository repository, UserManager<AppUser> userManager)
+     
+        public LeaveRequestsController(ILeaveRequestRepository repository, UserManager<AppUser> userManager,ILeaveTypeRepository leaveTypeRepository)
         {
-            _repository = repository;
+            _leaveRequestrepository = repository;
             _userManager = userManager;
-
+            _leaveTypeRepository = leaveTypeRepository;
+            
         }
 
 
@@ -26,7 +30,7 @@ namespace AuthenticationAPI.Controllers
         [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<IEnumerable<LeaveRequestDto>>> GetLeaveRequests()
         {
-            var leaveRequests = await _repository.GetAllAsync();
+            var leaveRequests = await _leaveRequestrepository.GetAllAsync();
             var dtos = leaveRequests.Select(lr => new LeaveRequestDto
             {
                 Id = lr.Id,
@@ -41,9 +45,10 @@ namespace AuthenticationAPI.Controllers
             return Ok(dtos);
         }
 
+
+
         [HttpGet("GetMyLeaves")]
-   
-        [Authorize(Roles = "ADMIN")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<LeaveRequestDto>>> GetMyLeaveRequests()
         {
             var currentUser = await _userManager.GetUserAsync(User);
@@ -51,8 +56,13 @@ namespace AuthenticationAPI.Controllers
             {
                 return Unauthorized("User not found");
             }
+            
+     
+            
+            
 
-            var leaveRequests = await _repository.GetLeaveRequestsByEmployee(currentUser.Id);
+            var leaveRequests = await _leaveRequestrepository.GetLeaveRequestsByEmployee(currentUser.Id.ToUpper());
+
             var dtos = leaveRequests.Select(lr => new LeaveRequestDto
             {
                 Id = lr.Id,
@@ -62,44 +72,47 @@ namespace AuthenticationAPI.Controllers
                 Approved = lr.Approved,
                 Cancelled = lr.Cancelled,
                 LeaveTypeId = lr.LeaveTypeId,
-                LeaveTypeName = lr.LeaveType.Name
+                LeaveTypeName = lr.LeaveType?.Name
+            }).ToList();
+
+            return Ok(new
+            {
+                UserId = currentUser.Id,
+                TotalLeave = dtos.Count,
+                UserLeave = dtos
             });
-            return Ok(dtos);
         }
 
 
+
+
         [HttpPost]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize]
         public async Task<ActionResult<LeaveRequestDto>> CreateLeaveRequest(CreateLeaveRequestDto createDto)
         {
-            if (!User.IsInRole("ADMIN"))
-            {
-                return Forbid();
-            }
-
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser == null)
             {
                 return Unauthorized("User not found");
             }
-            if (!Guid.TryParse(currentUser.Id, out Guid userId))
-            {
-                return BadRequest("Invalid user ID");
-            }
 
+      
             var leaveRequest = new LeaveRequest
             {
-                StartDate = createDto.StartDate,
+           
+                StartDate = DateTime.UtcNow,
                 EndDate = createDto.EndDate,
                 RequestComments = createDto.RequestComments,
                 LeaveTypeId = createDto.LeaveTypeId,
                 DateRequested = DateTime.UtcNow,
-                RequestingEmployeeId = userId,
-
+                AppUserId = Guid.TryParse(currentUser.Id, out Guid parsedGuid)
+                ? parsedGuid 
+                : null,
                 Approved = false,
+                Cancelled = false
             };
 
-            await _repository.CreateAsync(leaveRequest);
+            await _leaveRequestrepository.CreateAsync(leaveRequest);
 
             var dto = new LeaveRequestDto
             {
@@ -107,17 +120,28 @@ namespace AuthenticationAPI.Controllers
                 StartDate = leaveRequest.StartDate,
                 EndDate = leaveRequest.EndDate,
                 RequestComments = leaveRequest.RequestComments,
-                LeaveTypeId = leaveRequest.LeaveTypeId
+                LeaveTypeId = leaveRequest.LeaveTypeId,
+                LeaveTypeName = leaveRequest.LeaveType?.Name,
+                Approved = leaveRequest.Approved,
+                Cancelled = leaveRequest.Cancelled
             };
 
             return CreatedAtAction(nameof(GetLeaveRequests), new { id = dto.Id }, dto);
         }
 
+
+
         [HttpPut("{id}/approve")]
-        [Authorize(Roles = "Administrator")]
-        public  Task<IActionResult> ApproveLeaveRequest(int id, [FromBody] bool approved)
+        [Authorize(Roles = "ADMIN")]
+        public  async Task<IActionResult> ApproveLeaveRequest(Guid id, [FromBody] bool approved)
         {
-            throw new NotImplementedException();
+           if(!await _leaveRequestrepository.Exists(id)) return NotFound();
+
+            await _leaveRequestrepository.ChangeApprovalStatus(id, approved);
+            return NoContent();
         }
+
+
+
     }
 }

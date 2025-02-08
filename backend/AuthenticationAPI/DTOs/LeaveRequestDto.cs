@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 public class LeaveRequestDto
 {
 
@@ -20,6 +22,10 @@ public class CreateLeaveRequestDto
 {
   public DateTime StartDate {get; set;}
   public DateTime EndDate {get; set;}
+
+  [Required]
   public Guid LeaveTypeId {get; set;}
+
+  [Required]
   public string RequestComments {get; set;}
 }

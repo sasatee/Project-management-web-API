@@ -14,7 +14,42 @@ namespace AuthenticationAPI.Controllers
             _repository = repository;
         }
 
-       
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<LeaveTypeDto>>> GetLeaveTypes()
+        {
+          var LeaveTypes = await _repository.GetAllAsync();
+
+            if(LeaveTypes == null) return NotFound();
+            var dto = LeaveTypes.Select(lt => new LeaveTypeDto
+            {
+                Name = lt.Name,
+                DefaultDays = lt.DefaultDays,
+                Id = lt.Id,
+            }
+            );
+            return Ok(dto);
+        }
+
+
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<LeaveTypeDto>> GetLeaveType(Guid id)
+        {
+            var leaveType = await _repository.GetByIdAsync(id);
+            if (leaveType == null) return NotFound();
+
+            var dto = new LeaveTypeDto()
+            {
+                Id = leaveType.Id,
+                Name = leaveType.Name,
+                DefaultDays = leaveType.DefaultDays,
+            };
+            return Ok(dto);
+        }
+
+
+
+
         [HttpPost]
         public async Task<ActionResult<LeaveTypeDto>> CreateLeaveType([FromBody] LeaveTypeDto dto)
         {
@@ -23,7 +58,7 @@ namespace AuthenticationAPI.Controllers
             {
                 DateCreated = DateTime.UtcNow,
                 DateModified = DateTime.UtcNow,
-                DefaultDays = 0,
+                DefaultDays = dto.DefaultDays,
                 Id = Guid.NewGuid(), 
                 Name = dto.Name,   
             };
@@ -45,22 +80,12 @@ namespace AuthenticationAPI.Controllers
             return CreatedAtAction(nameof(CreateLeaveType), new { id = leaveTypeDto.Id }, leaveTypeDto);
         }
 
-        [HttpDelete("{id}")]
-        public Task DeleteAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+      
 
-        [HttpGet("{id}")]
-        public Task<LeaveType> GetByIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
 
-        [HttpPut("{id}")]
-        public Task UpdateAsync(LeaveType leaveType)
-        {
-            throw new NotImplementedException();
-        }
+
+     
+
+      
     }
 }

@@ -1,3 +1,4 @@
+using AuthenticationAPI.Models;
 using Payroll.Model;
 
 public class LeaveRequest{
@@ -15,7 +16,10 @@ public class LeaveRequest{
     public Guid LeaveTypeId { get; set; }
     public LeaveType LeaveType { get; set; }
     
+    public Guid? AppUserId { get; set; }
+    public AppUser? AppUser { get; set; }
 
+    
     public ICollection<Employee> Employees { get; set; } = new List<Employee> { };
     public Guid RequestingEmployeeId { get; set; }
 

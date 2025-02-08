@@ -16,7 +16,6 @@ namespace AuthenticationAPI.Data
         public DbSet<JobTitle> JobTitles { get; set; }
         public DbSet<Attendance> Attendances { get; set; }
         public DbSet<Payrolls> Payrolls { get; set; }
-        public DbSet<Leave> Leaves { get; set; }
         public DbSet<PerformanceReview> PerformanceReviews { get; set; }
         public DbSet<Training> Trainings { get; set; }
         public DbSet<EmployeeTraining> EmployeeTrainings { get; set; }

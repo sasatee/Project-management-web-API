@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AuthenticationAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreateSqlite : Migration
+    public partial class AddAppUserToLeaveRequestNullableConstraint : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -242,15 +242,16 @@ namespace AuthenticationAPI.Migrations
                     Cancelled = table.Column<bool>(type: "INTEGER", nullable: false),
                     ApprovedById = table.Column<string>(type: "TEXT", nullable: true),
                     LeaveTypeId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    RequestingEmployeeId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    AppUserId = table.Column<string>(type: "TEXT", nullable: true)
+                    AppUserId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    AppUserId1 = table.Column<string>(type: "TEXT", nullable: true),
+                    RequestingEmployeeId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LeaveRequests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LeaveRequests_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_LeaveRequests_AspNetUsers_AppUserId1",
+                        column: x => x.AppUserId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -551,9 +552,9 @@ namespace AuthenticationAPI.Migrations
                 column: "LeaveTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LeaveRequests_AppUserId",
+                name: "IX_LeaveRequests_AppUserId1",
                 table: "LeaveRequests",
-                column: "AppUserId");
+                column: "AppUserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LeaveRequests_LeaveTypeId",
