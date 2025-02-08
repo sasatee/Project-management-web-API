@@ -49,8 +49,7 @@ namespace AuthenticationAPI.Repository
 
 
             return await _context.LeaveRequests
-            .Include(q => q.LeaveType)
-            .FirstOrDefault(q => q.Id == id);
+            .Include(q => q.LeaveType).FirstOrDefaultAsync(q => q.Id == id);
         }
 
         public async Task<List<LeaveRequest>> GetLeaveRequestsByEmployee(string employeeId)

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthenticationAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250207081452_IntialMigrationWithSqlite")]
-    partial class IntialMigrationWithSqlite
+    [Migration("20250208050026_InitialCreateSqlite")]
+    partial class InitialCreateSqlite
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -145,7 +145,6 @@ namespace AuthenticationAPI.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ApprovedById")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("Cancelled")

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AuthenticationAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class IntialMigrationWithSqlite : Migration
+    public partial class InitialCreateSqlite : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -240,7 +240,7 @@ namespace AuthenticationAPI.Migrations
                     RequestComments = table.Column<string>(type: "TEXT", nullable: false),
                     Approved = table.Column<bool>(type: "INTEGER", nullable: true),
                     Cancelled = table.Column<bool>(type: "INTEGER", nullable: false),
-                    ApprovedById = table.Column<string>(type: "TEXT", nullable: false),
+                    ApprovedById = table.Column<string>(type: "TEXT", nullable: true),
                     LeaveTypeId = table.Column<Guid>(type: "TEXT", nullable: false),
                     RequestingEmployeeId = table.Column<Guid>(type: "TEXT", nullable: false),
                     AppUserId = table.Column<string>(type: "TEXT", nullable: true)
