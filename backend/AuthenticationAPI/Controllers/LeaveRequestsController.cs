@@ -42,7 +42,8 @@ namespace AuthenticationAPI.Controllers
         }
 
         [HttpGet("GetMyLeaves")]
-        [Authorize(Role="ADMIN")]
+   
+        [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<IEnumerable<LeaveRequestDto>>> GetMyLeaveRequests()
         {
             var currentUser = await _userManager.GetUserAsync(User);

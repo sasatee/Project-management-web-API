@@ -1,7 +1,7 @@
 using AuthenticationAPI.Data;
-using AuthenticationAPI.IRepository;
-using AuthenticationAPI.IRepository.Repository;
+using AuthenticationAPI.IRepository.IRepository;
 using AuthenticationAPI.Models;
+using AuthenticationAPI.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

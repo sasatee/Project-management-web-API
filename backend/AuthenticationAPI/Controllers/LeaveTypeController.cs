@@ -1,5 +1,5 @@
 ﻿using AuthenticationAPI.DTOs;
-using AuthenticationAPI.IRepository;
+using AuthenticationAPI.IRepository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthenticationAPI.Controllers

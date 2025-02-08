@@ -1,7 +1,7 @@
-﻿
-using AuthenticationAPI.Data;
+﻿using AuthenticationAPI.Data;
+using AuthenticationAPI.IRepository.IRepository;
 
-namespace AuthenticationAPI.IRepository.Repository
+namespace AuthenticationAPI.Repository
 {
     public class LeaveTypeRepository : ILeaveTypeRepository
     {
@@ -10,10 +10,10 @@ namespace AuthenticationAPI.IRepository.Repository
         {
             _context = context;
 
-            
+
         }
 
-     
+
 
         public async Task<LeaveType> CreateAsync(LeaveType LeaveType)
         {

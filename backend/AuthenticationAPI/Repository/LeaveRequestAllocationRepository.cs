@@ -1,11 +1,8 @@
-﻿
-using AuthenticationAPI.Data;
-using AuthenticationAPI.IRepository;
-
+﻿using AuthenticationAPI.Data;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace AuthenticationAPI.IRepository.Repository
+namespace AuthenticationAPI.Repository
 {
     public class LeaveRequestAllocationRepository : ILeaveRequestRepository
     {
@@ -41,16 +38,16 @@ namespace AuthenticationAPI.IRepository.Repository
         {
 
             return await _context.LeaveRequests
-                .Include(q=>q.LeaveType)
+                .Include(q => q.LeaveType)
                 .ToListAsync();
-            
+
         }
 
         public async Task<LeaveRequest> GetByIdAsync(Guid id)
         {
 
 
-            
+
             return await _context.LeaveRequests
             .Include(q => q.LeaveType)
             .FirstOrDefault(q => q.Id == id);
@@ -59,7 +56,7 @@ namespace AuthenticationAPI.IRepository.Repository
         public async Task<List<LeaveRequest>> GetLeaveRequestsByEmployee(string employeeId)
         {
             return await _context.LeaveRequests
-                .Where(q=>q.RequestingEmployeeId.ToString() == employeeId)
+                .Where(q => q.RequestingEmployeeId.ToString() == employeeId)
                 .Include(q => q.LeaveType)
                 .ToListAsync();
         }
