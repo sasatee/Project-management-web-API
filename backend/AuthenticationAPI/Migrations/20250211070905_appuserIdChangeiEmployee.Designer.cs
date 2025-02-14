@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthenticationAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250208075937_AddAppUserToLeaveRequestNullableConstraint")]
-    partial class AddAppUserToLeaveRequestNullableConstraint
+    [Migration("20250211070905_appuserIdChangeiEmployee")]
+    partial class appuserIdChangeiEmployee
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -100,16 +100,13 @@ namespace AuthenticationAPI.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("AppUserId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("EmployeeId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("EmployeeId1")
+                    b.Property<Guid>("EmployeeId")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("LeaveTypeId")
@@ -125,7 +122,7 @@ namespace AuthenticationAPI.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.HasIndex("EmployeeId1");
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("LeaveTypeId");
 
@@ -498,36 +495,6 @@ namespace AuthenticationAPI.Migrations
                     b.ToTable("JobTitles");
                 });
 
-            modelBuilder.Entity("Payroll.Model.Leave", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LeaveType")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("Leaves");
-                });
-
             modelBuilder.Entity("Payroll.Model.Notification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -638,13 +605,15 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("LeaveAllocation", b =>
                 {
-                    b.HasOne("AuthenticationAPI.Models.AppUser", null)
+                    b.HasOne("AuthenticationAPI.Models.AppUser", "AppUser")
                         .WithMany("LeaveAllocations")
-                        .HasForeignKey("AppUserId");
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Payroll.Model.Employee", "Employee")
                         .WithMany()
-                        .HasForeignKey("EmployeeId1")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -653,6 +622,8 @@ namespace AuthenticationAPI.Migrations
                         .HasForeignKey("LeaveTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AppUser");
 
                     b.Navigation("Employee");
 
@@ -780,17 +751,6 @@ namespace AuthenticationAPI.Migrations
                     b.Navigation("Training");
                 });
 
-            modelBuilder.Entity("Payroll.Model.Leave", b =>
-                {
-                    b.HasOne("Payroll.Model.Employee", "Employee")
-                        .WithMany("Leaves")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
             modelBuilder.Entity("Payroll.Model.Notification", b =>
                 {
                     b.HasOne("Payroll.Model.Employee", "Employee")
@@ -844,8 +804,6 @@ namespace AuthenticationAPI.Migrations
             modelBuilder.Entity("Payroll.Model.Employee", b =>
                 {
                     b.Navigation("Attendances");
-
-                    b.Navigation("Leaves");
 
                     b.Navigation("Payrolls");
 

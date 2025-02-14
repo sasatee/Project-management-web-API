@@ -11,41 +11,57 @@ namespace AuthenticationAPI.Repository
         {
             _context = context;
         }
-        public Task<bool> AllocationExists(string employeeId, int leaveTypeId, int period)
+
+        public async Task<bool> AllocationExists(Guid employeeId, Guid leaveTypeId, int period, Guid appuserId)
         {
-            throw new NotImplementedException();
+               return await _context.LeaveAllocations
+                .AnyAsync(
+                x => x.EmployeeId == employeeId
+                && x.AppUserId == appuserId.ToString()
+                && x.LeaveTypeId == leaveTypeId
+                && x.Period == period);
         }
 
-        public Task<LeaveAllocation> CreateAsync(LeaveAllocation leaveAllocation)
+        public async Task<LeaveAllocation> CreateAsync(LeaveAllocation leaveAllocation)
         {
-            throw new NotImplementedException();
+               await _context.LeaveAllocations.AddAsync(leaveAllocation);
+               await _context.SaveChangesAsync();
+               return leaveAllocation;
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+                var leaveAllocation = await GetByIdAsync(id);
+                _context.LeaveAllocations.Remove(leaveAllocation);
+                await _context.SaveChangesAsync();
+
+
         }
 
         public async Task<List<LeaveAllocation>> GetAllAsync()
         {
-            return await _context.LeaveAllocations
-                .Include(q=>q.LeaveType)
-                .ToListAsync();
+                     return await _context.LeaveAllocations
+                    .Include(q=>q.LeaveType)
+                    .ToListAsync();
         }
 
-        public Task<LeaveAllocation> GetByIdAsync(int id)
+        public async Task<LeaveAllocation> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _context.LeaveAllocations.FirstOrDefaultAsync(x => x.Id == id)
+                   ?? throw new InvalidOperationException("LeaveAllocation not found");
         }
 
-        public Task<List<LeaveAllocation>> GetLeaveAllocationsByEmployee(string employeeId)
+
+        public async Task<List<LeaveAllocation>> GetLeaveAllocationsByEmployee(Guid employeeId)
         {
-            throw new NotImplementedException();
+                 return await _context.LeaveAllocations
+                .Where(q=>q.EmployeeId == employeeId).Include(q=>q.LeaveType).ToListAsync();
         }
 
         public Task UpdateAsync(LeaveAllocation leaveAllocation)
         {
-            throw new NotImplementedException();
+                _context.Entry(leaveAllocation).State = EntityState.Modified;
+                return _context.SaveChangesAsync();
         }
     }
 }

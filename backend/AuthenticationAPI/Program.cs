@@ -2,6 +2,8 @@ using AuthenticationAPI.Data;
 using AuthenticationAPI.IRepository.IRepository;
 using AuthenticationAPI.Models;
 using AuthenticationAPI.Repository;
+using AuthenticationAPI.Repository.IRepository;
+using AuthenticationAPI.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +40,7 @@ var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
 //sql lite 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-      options.UseSqlite("Data Source = Hrdummy.db"));
+      options.UseSqlite("Data Source = Hrdummya.db"));
 
 
 //add identity role in DI container
@@ -77,6 +79,9 @@ builder.Services.AddAuthentication(option =>
 
 builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository>();
+builder.Services.AddScoped<ILeaveAllocationService, LeaveAllocationService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

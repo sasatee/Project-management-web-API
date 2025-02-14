@@ -1,10 +1,10 @@
 public interface ILeaveAllocationRepository
 {
     Task<List<LeaveAllocation>> GetAllAsync();
-    Task<List<LeaveAllocation>> GetLeaveAllocationsByEmployee(string employeeId);
-    Task<LeaveAllocation> GetByIdAsync(int id);
+    Task<List<LeaveAllocation>> GetLeaveAllocationsByEmployee(Guid employeeId);
+    Task<LeaveAllocation> GetByIdAsync(Guid id);
     Task<LeaveAllocation> CreateAsync(LeaveAllocation leaveAllocation);
     Task UpdateAsync(LeaveAllocation leaveAllocation);
-    Task DeleteAsync(int id);
-    Task<bool> AllocationExists(string employeeId, int leaveTypeId, int period);
+    Task DeleteAsync(Guid id);
+    Task<bool> AllocationExists(Guid employeeId, Guid leaveTypeId, int period,Guid appuserId);
 } 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AuthenticationAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class AddAppUserToLeaveRequestNullableConstraint : Migration
+    public partial class appuserIdChangeiEmployee : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -355,10 +355,9 @@ namespace AuthenticationAPI.Migrations
                     NumberOfDays = table.Column<int>(type: "INTEGER", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Period = table.Column<int>(type: "INTEGER", nullable: false),
-                    EmployeeId1 = table.Column<Guid>(type: "TEXT", nullable: false),
-                    EmployeeId = table.Column<string>(type: "TEXT", nullable: false),
+                    EmployeeId = table.Column<Guid>(type: "TEXT", nullable: false),
                     LeaveTypeId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    AppUserId = table.Column<string>(type: "TEXT", nullable: true)
+                    AppUserId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -367,10 +366,11 @@ namespace AuthenticationAPI.Migrations
                         name: "FK_LeaveAllocations_AspNetUsers_AppUserId",
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_LeaveAllocations_Employees_EmployeeId1",
-                        column: x => x.EmployeeId1,
+                        name: "FK_LeaveAllocations_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
                         principalTable: "Employees",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -378,28 +378,6 @@ namespace AuthenticationAPI.Migrations
                         name: "FK_LeaveAllocations_LeaveType_LeaveTypeId",
                         column: x => x.LeaveTypeId,
                         principalTable: "LeaveType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Leaves",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    LeaveType = table.Column<string>(type: "TEXT", nullable: false),
-                    Status = table.Column<string>(type: "TEXT", nullable: false),
-                    EmployeeId = table.Column<Guid>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Leaves", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Leaves_Employees_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "Employees",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -542,9 +520,9 @@ namespace AuthenticationAPI.Migrations
                 column: "AppUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LeaveAllocations_EmployeeId1",
+                name: "IX_LeaveAllocations_EmployeeId",
                 table: "LeaveAllocations",
-                column: "EmployeeId1");
+                column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LeaveAllocations_LeaveTypeId",
@@ -560,11 +538,6 @@ namespace AuthenticationAPI.Migrations
                 name: "IX_LeaveRequests_LeaveTypeId",
                 table: "LeaveRequests",
                 column: "LeaveTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Leaves_EmployeeId",
-                table: "Leaves",
-                column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_EmployeeId",
@@ -611,9 +584,6 @@ namespace AuthenticationAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "LeaveAllocations");
-
-            migrationBuilder.DropTable(
-                name: "Leaves");
 
             migrationBuilder.DropTable(
                 name: "Notifications");
