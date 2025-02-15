@@ -54,6 +54,24 @@ namespace AuthenticationAPI.Data
             modelBuilder.Entity<Payrolls>()
                 .Property(p => p.NetPay)
                 .HasPrecision(18, 2);
+
+            modelBuilder.Entity<LeaveAllocation>(entity =>
+            {
+                entity.HasOne(la => la.AppUser)
+                    .WithMany(au => au.LeaveAllocations)
+                    .HasForeignKey(la => la.AppUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(la => la.Employee)
+                    .WithMany()
+                    .HasForeignKey(la => la.EmployeeId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(la => la.LeaveType)
+                    .WithMany()
+                    .HasForeignKey(la => la.LeaveTypeId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }

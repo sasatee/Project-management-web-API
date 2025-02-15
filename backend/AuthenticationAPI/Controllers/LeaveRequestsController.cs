@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Payroll.Model;
 
 namespace AuthenticationAPI.Controllers
 {
@@ -96,6 +97,12 @@ namespace AuthenticationAPI.Controllers
                 return Unauthorized("User not found");
             }
 
+              if (!Guid.TryParse(currentUser.Id, out Guid parsedGuid))
+                {
+                    return BadRequest("Invalid user ID format");
+                }
+
+
       
             var leaveRequest = new LeaveRequest
             {
@@ -105,11 +112,12 @@ namespace AuthenticationAPI.Controllers
                 RequestComments = createDto.RequestComments,
                 LeaveTypeId = createDto.LeaveTypeId,
                 DateRequested = DateTime.UtcNow,
-                AppUserId = Guid.TryParse(currentUser.Id, out Guid parsedGuid)
-                ? parsedGuid 
-                : null,
+                AppUserId = parsedGuid,
                 Approved = false,
-                Cancelled = false
+                Cancelled = false,
+                //
+                RequestingEmployeeId=parsedGuid,
+                Employees = new List<Employee>()
             };
 
             await _leaveRequestrepository.CreateAsync(leaveRequest);
