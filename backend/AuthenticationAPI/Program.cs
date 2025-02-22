@@ -34,7 +34,24 @@ var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 //add database 
 //sql server database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-         options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionProd")));
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+    // // Configure connection resiliency
+    // options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    //     sqlServerOptionsAction: sqlOptions =>
+    //     {
+    //         sqlOptions.EnableRetryOnFailure(
+    //             maxRetryCount: 5,
+    //             maxRetryDelay: TimeSpan.FromSeconds(30),
+    //             errorNumbersToAdd: null);
+    //     });
+    // // Configure warnings
+    // options.ConfigureWarnings(warnings =>
+    // {
+    //     warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning);
+    // });
+});
 
 //sql lite 
 // builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -128,7 +145,27 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();    
 app.UseAuthorization();
 
-app.UseAuthorization();
+// Add this after building the app but before app.Run()
+try
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        
+        // Ensure database is created
+        db.Database.EnsureCreated();
+        
+        // Instead of Migrate(), which requires migrations to be up-to-date
+        if (db.Database.CanConnect())
+        {
+            // Optional: Add any seed data here if needed
+        }
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"An error occurred while migrating the database: {ex.Message}");
+}
 
 app.MapControllers();
 
