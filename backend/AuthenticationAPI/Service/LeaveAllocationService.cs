@@ -10,7 +10,7 @@ namespace AuthenticationAPI.Service
             private readonly ILeaveAllocationRepository _leaveAllocationRepository;
             private readonly ILeaveTypeRepository _leaveTypeRepository;
             private readonly IEmployeeRepository   _employeeRepository;
-             private readonly ApplicationDbContext _context;
+            private readonly ApplicationDbContext _context;
 
             public LeaveAllocationService(ILeaveAllocationRepository leaveAllocationRepository,ILeaveTypeRepository leaveTypeRepositiory,IEmployeeRepository employeeRepository, ApplicationDbContext context)
             {

@@ -10,13 +10,13 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__DefaultConnection=Server=sql-server;Database=HumanResourceManagement;User Id=sa;Password=HrManagmentProd@1;TrustServerCertificate=True;MultipleActiveResultSets=true;ConnectRetryCount=5;ConnectRetryInterval=10
-    depends_on:
-      sql-server:
-        condition: service_healthy
-    networks:
-      - auth-network
-    restart: unless-stopped
-    mem_limit: 512m
+    # depends_on:
+    #   sql-server:
+    #     condition: service_healthy
+    # networks:
+    #   - auth-network
+    # restart: unless-stopped
+    # mem_limit: 512m
 
   sql-server:
     image: mcr.microsoft.com/mssql/server:2022-latest
