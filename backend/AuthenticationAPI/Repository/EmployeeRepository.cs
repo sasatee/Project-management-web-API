@@ -5,6 +5,7 @@ using AuthenticationAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Payroll.Model;
 using System.Linq;
 
 namespace AuthenticationAPI.Repository
@@ -15,7 +16,7 @@ namespace AuthenticationAPI.Repository
         private readonly UserManager<AppUser> _userManager;
         private readonly ApplicationDbContext _context;
 
-        public EmployeeRepository(UserManager<AppUser> userManager,ApplicationDbContext context) 
+        public EmployeeRepository(UserManager<AppUser> userManager, ApplicationDbContext context)
         {
             _userManager = userManager;
             _context = context;
@@ -34,8 +35,8 @@ namespace AuthenticationAPI.Repository
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Roles = roles.ToList(),
-                    AppUserId = user.Id ,
-                    
+                    AppUserId = user.Id,
+
                 };
             }));
             return userDetailDtos.ToList();
@@ -64,5 +65,33 @@ namespace AuthenticationAPI.Repository
             var employee = await _context.Users.FindAsync(employeeGuid);
             return employee != null;
         }
+
+        public async Task<IResult> CreateEmployee(string employeeGuid, EmployeeDto empDto)
+        {
+            var alreadyExist = await Exists(employeeGuid);
+            if (alreadyExist) return Results.BadRequest(new { alreadyExist,message=$"Employee already with {employeeGuid}" });
+
+            if (!alreadyExist)
+            {
+                var emp = new Employee
+                {
+                    Id = Guid.NewGuid(), 
+                    FirstName = empDto.FirstName,
+                    LastName = empDto.LastName,
+                    Email = empDto.Email,
+                    Phone = empDto.Phone,
+                    Address = empDto.Address,
+                    DepartmentId = empDto.DepartmentId,
+                    JobTitleId = empDto.JobTitleId
+                };
+
+                await _context.Employees.AddAsync(emp);
+                await _context.SaveChangesAsync();
+            }
+
+            return Results.Ok();
+        }
+
+   
     }
 }

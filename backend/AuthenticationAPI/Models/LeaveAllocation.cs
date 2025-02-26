@@ -11,7 +11,7 @@ public class LeaveAllocation
 
     [ForeignKey("EmployeeId")]
     public  Employee Employee { get; set; }
-    public Guid? EmployeeId { get; set; }
+    public Guid EmployeeId { get; set; }
 
     [ForeignKey("LeaveTypeId")]
     public  LeaveType LeaveType { get; set; }

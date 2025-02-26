@@ -132,15 +132,16 @@ namespace AuthenticationAPI.Controllers
 
             var roles = _userManager.GetRolesAsync(user).Result;
 
-            List<Claim> claims =
-            [
-                new (JwtRegisteredClaimNames.Email,user.Email ?? ""),
+            List<Claim> claims = new List<Claim>
+            {
+                 new (JwtRegisteredClaimNames.Email,user.Email ?? ""),
                 new(JwtRegisteredClaimNames.Name,user.FirstName ?? ""),
-                  new(JwtRegisteredClaimNames.Name,user.LastName ?? ""),
+                new(JwtRegisteredClaimNames.Name,user.LastName ?? ""),
                 new(JwtRegisteredClaimNames.NameId,user.Id ?? ""),
                 new(JwtRegisteredClaimNames.Aud,_configuration.GetSection("JWTSetting").GetSection("ValidAudience").Value!),
                 new(JwtRegisteredClaimNames.Iss,_configuration.GetSection("JWTSetting").GetSection("ValidIssuer").Value!)
-            ];
+
+            };
 
             foreach (var role in roles)
             {
@@ -232,9 +233,6 @@ namespace AuthenticationAPI.Controllers
             
             
             }
-
-
-
 
             return Ok(new
             {

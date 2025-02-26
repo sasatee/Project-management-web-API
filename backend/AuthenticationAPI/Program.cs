@@ -35,12 +35,12 @@ var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
 //add database 
 //sql server database
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//          options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+          options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //sql lite 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-      options.UseSqlite("Data Source = Hrdummya.db"));
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//      options.UseSqlite("Data Source = Hrdummya.db"));
 
 
 //add identity role in DI container

@@ -20,66 +20,117 @@ namespace AuthenticationAPI.Service
                 _context = context;
             }
 
-        public async Task<bool> CreateLeaveAllocationsForYear(Guid leaveTypeId, int period, Guid appuserId)
+         public async Task<CreateLeaveAllocationDto> CreateLeaveAllocationsForYear(Guid leaveTypeId, int period, Guid appuserId,Guid employeeId)
         {
-            var leaveType = await _leaveTypeRepository.GetByIdAsync(new Guid(leaveTypeId.ToString()));
-            if (leaveType == null)
-                throw new Exception("Leave Type not found");
+            try 
+            {
+                var leaveType = await _leaveTypeRepository.GetByIdAsync(new Guid(leaveTypeId.ToString()));
+                if (leaveType == null)
+                    throw new Exception("Leave Type not found");
 
-
-                //Verify Appuser exsists
                 var appuser = await _context.Users.FindAsync(appuserId.ToString());
                 if (appuser == null)
                     throw new Exception("Appuser not found");
 
 
+                //var employeeUser = await _context.Employees.FindAsync(employeeId.ToString());
+                //if (employeeUser == null)
+                //    throw new Exception("employee not found");
 
-            var employees = await _employeeRepository.GetEmployees();
-            var allocations = new List<LeaveAllocation>();
 
-       foreach (var employee in employees)
-            {
-                if (string.IsNullOrEmpty(employee.Id) || !Guid.TryParse(employee.Id, out var employeeGuid))
-                    continue;
 
-                // Check if employee exists in Users table
-                var employeeExists = await _context.Users.FindAsync(employeeGuid.ToString());
-                if (employeeExists == null)
-                    continue;
 
-                if (await _leaveAllocationRepository.AllocationExists(employeeGuid, leaveType.Id, period, appuserId))
-                    continue;
 
-                allocations.Add(new LeaveAllocation
+
+                var employees = await _employeeRepository.GetEmployees();
+                Console.WriteLine($"Found {employees.Count()} employees to process");
+                
+                var successCount = 0;
+                var skipCount = 0;
+
+                foreach (var employee in employees)
                 {
-                    Id = Guid.NewGuid(), // Ensure ID is set
-                    EmployeeId = employeeGuid,
-                    LeaveTypeId = leaveType.Id,
+                    try
+                    {
+                        if (string.IsNullOrEmpty(employee.Id) || !Guid.TryParse(employee.Id, out var employeeGuid))
+                        {
+                            Console.WriteLine($"Skipping employee with invalid ID: {employee.Id}");
+                            skipCount++;
+                            continue;
+                        }
+
+                        // Check if employee exists in Users table
+                        var employeeUser = await _context.Users.FindAsync(employeeGuid.ToString());
+                        if (employeeUser == null)
+                        {
+                            Console.WriteLine($"Skipping employee not found in Users: {employeeGuid}");
+                            skipCount++;
+                            continue;
+                        }
+
+                        // Check if employee exists in Employees table
+                        var employeeExists = await _context.Employees.FindAsync(employeeGuid);
+                        if (employeeExists == null)
+                        {
+                            Console.WriteLine($"Skipping employee not found in Employees table: {employeeGuid}");
+                            skipCount++;
+                            continue;
+                        }
+
+                        var allocationExists = await _leaveAllocationRepository.AllocationExists(employeeGuid, leaveType.Id, period, appuserId);
+                        if (allocationExists)
+                        {
+                            Console.WriteLine($"Skipping existing allocation for employee: {employeeGuid}");
+                            skipCount++;
+                            continue;
+                        }
+
+                        var allocation = new LeaveAllocation
+                        {
+                            Id = Guid.NewGuid(),
+                            EmployeeId = employeeGuid,
+                            LeaveTypeId = leaveType.Id,
+                            NumberOfDays = leaveType.DefaultDays,
+                            Period = period,
+                            DateCreated = DateTime.UtcNow,
+                            AppUserId = appuserId.ToString()
+                        };
+
+                        Console.WriteLine($"Creating allocation for employee: {employeeGuid}");
+                        await _leaveAllocationRepository.CreateAsync(allocation);
+                        await _context.SaveChangesAsync();
+                        successCount++;
+                        Console.WriteLine($"Successfully created allocation for employee: {employeeGuid}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to create allocation for employee {employee.Id}: {ex.Message}");
+                        if (ex.InnerException != null)
+                        {
+                            Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                        }
+                    }
+                }
+
+                Console.WriteLine($"Process completed: {successCount} allocations created, {skipCount} skipped");
+
+                return new CreateLeaveAllocationDto
+                {
                     NumberOfDays = leaveType.DefaultDays,
                     Period = period,
-                    DateCreated = DateTime.UtcNow,
-                    AppUserId = appuserId.ToString()
-                });
-        }
-            try
-            {
-
-                foreach (var allocation in allocations)
-                {
-                    await _leaveAllocationRepository.CreateAsync(allocation);
-                }
-              
-                Console.WriteLine("Allocation created successfully");
+                    EmployeeId = appuserId.ToString(),
+                    LeaveTypeId = leaveType.Id
+                };
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to create allocation: {ex.Message}");
-                throw;
+                Console.WriteLine($"Process failed with error: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
+                throw new Exception($"Failed to create leave allocations: {ex.Message}", ex);
             }
-           
-
-
-            return true;
         }
 
 
@@ -98,6 +149,7 @@ namespace AuthenticationAPI.Service
                 throw new NotImplementedException();
             }
         }
+   
 
     }
 

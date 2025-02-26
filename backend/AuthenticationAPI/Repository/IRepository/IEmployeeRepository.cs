@@ -1,4 +1,5 @@
 ﻿using AuthenticationAPI.DTOs;
+using Payroll.Model;
 
 namespace AuthenticationAPI.Repository.IRepository
 {
@@ -7,5 +8,8 @@ namespace AuthenticationAPI.Repository.IRepository
         Task<List<UserDetailDto>> GetEmployees();
         Task<UserDetailDto> GetEmployee(Guid userId);
         Task<bool> Exists(string employeeGuid);
+
+
+        Task<IResult> CreateEmployee(string employeeGuid, EmployeeDto empDto);
     }
 }

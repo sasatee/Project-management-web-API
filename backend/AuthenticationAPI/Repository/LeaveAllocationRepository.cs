@@ -22,11 +22,11 @@ namespace AuthenticationAPI.Repository
                 && x.Period == period);
         }
 
-        public async Task<LeaveAllocation> CreateAsync(LeaveAllocation leaveAllocation)
+        public async Task CreateAsync(LeaveAllocation leaveAllocation)
         {
                await _context.LeaveAllocations.AddAsync(leaveAllocation);
                await _context.SaveChangesAsync();
-               return leaveAllocation;
+              
         }
 
         public async Task DeleteAsync(Guid id)
