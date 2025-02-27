@@ -4,6 +4,7 @@ using AuthenticationAPI.Models;
 using AuthenticationAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Payroll.Model;
 using System.Linq;
@@ -68,30 +69,100 @@ namespace AuthenticationAPI.Repository
 
         public async Task<IResult> CreateEmployee(string employeeGuid, EmployeeDto empDto)
         {
-            var alreadyExist = await Exists(employeeGuid);
-            if (alreadyExist) return Results.BadRequest(new { alreadyExist,message=$"Employee already with {employeeGuid}" });
+            // Check if user already exists
+            // var alreadyExist = await Exists(employeeGuid);
+            // if (alreadyExist) return Results.BadRequest(new { isSuccess = false, message = "Employee already exists." });
 
-            if (!alreadyExist)
+            // Begin transaction
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                var emp = new Employee
+                // First verify that the Department exists
+                var department = await _context.Departments.FindAsync(empDto.DepartmentId);
+                if (department == null)
                 {
-                    Id = Guid.NewGuid(), 
+                    return Results.BadRequest(new { isSuccess = false, message = "Invalid Department ID" });
+                }
+
+                // Verify that the JobTitle exists
+                var jobTitle = await _context.JobTitles.FindAsync(empDto.JobTitleId);
+                if (jobTitle == null)
+                {
+                    return Results.BadRequest(new { isSuccess = false, message = "Invalid Job Title ID" });
+                }
+
+                // Create AppUser first
+                var appUser = new AppUser
+                {
+                    UserName = empDto.Email,
+                    Email = empDto.Email,
+                    FirstName = empDto.FirstName,
+                    LastName = empDto.LastName,
+                    PhoneNumber = empDto.Phone,
+                    DateJoined = DateTime.UtcNow
+                };
+
+                // Create user with default password "Employee@123"
+                var result = await _userManager.CreateAsync(appUser, "Employee@123");
+                if (!result.Succeeded)
+                {
+                    return Results.BadRequest(new { isSuccess = false, message = "Failed to create user account", errors = result.Errors });
+                }
+
+                // Assign EMPLOYEE role
+                await _userManager.AddToRoleAsync(appUser, "EMPLOYEE");
+
+                // Create Employee record
+                var employee = new Employee
+                {
+                    Id = Guid.NewGuid(),
                     FirstName = empDto.FirstName,
                     LastName = empDto.LastName,
                     Email = empDto.Email,
                     Phone = empDto.Phone,
                     Address = empDto.Address,
                     DepartmentId = empDto.DepartmentId,
-                    JobTitleId = empDto.JobTitleId
+                    JobTitleId = empDto.JobTitleId,
+                    AppUserId = appUser.Id,
+                    DateOfJoining = DateTime.UtcNow
                 };
 
-                await _context.Employees.AddAsync(emp);
+                await _context.Employees.AddAsync(employee);
                 await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return Results.Ok(new { 
+                    isSuccess = true, 
+                    message = "Employee created successfully",
+                    employeeDetails = new {
+                        email = empDto.Email,
+                        defaultPassword = "Employee@123"
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return Results.BadRequest(new { isSuccess = false, message = "Failed to create employee", error = ex.Message });
+            }
+        }
+         
+
+    public async Task<IActionResult> ChangePassword(string userId, string currentPassword, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new NotFoundObjectResult(new { isSuccess = false, message = "User not found" });
             }
 
-            return Results.Ok();
-        }
+            var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+            if (result.Succeeded)
+            {
+                return new OkObjectResult(new { isSuccess = true, message = "Password changed successfully" });
+            }
 
-   
+            return new BadRequestObjectResult(new { isSuccess = false, message = "Failed to change password", errors = result.Errors });
+        }
     }
 }

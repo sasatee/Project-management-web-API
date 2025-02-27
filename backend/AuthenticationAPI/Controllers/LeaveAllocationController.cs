@@ -16,6 +16,8 @@ namespace AuthenticationAPI.Controllers
         public int Period { get; set; }
 
         public Guid AppUserId { get; set; }
+
+        public Guid EmployeeId { get; set; }
     }
 
     [Route("api/[controller]")]
@@ -49,7 +51,7 @@ namespace AuthenticationAPI.Controllers
             {
                 var result = await _leaveAllocationService.CreateLeaveAllocationsForYear(
                     dto.LeaveTypeId, // Convert Guid to int
-                    dto.Period,dto.AppUserId);
+                    dto.Period,dto.AppUserId,dto.EmployeeId);
                 return Ok(result);
             }
             catch (Exception ex)
