@@ -72,6 +72,15 @@ namespace AuthenticationAPI.Data
                     .HasForeignKey(la => la.LeaveTypeId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
+<<<<<<< HEAD
+=======
+
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.AppUser)
+                .WithOne()
+                .HasForeignKey<Employee>(e => e.AppUserId)
+                .OnDelete(DeleteBehavior.NoAction);
+>>>>>>> origin/master
         }
     }
 }

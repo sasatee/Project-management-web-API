@@ -2,6 +2,8 @@ using AuthenticationAPI.Data;
 using AuthenticationAPI.IRepository.IRepository;
 using AuthenticationAPI.Models;
 using AuthenticationAPI.Repository;
+using AuthenticationAPI.Repository.IRepository;
+using AuthenticationAPI.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -34,28 +36,11 @@ var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 //add database 
 //sql server database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-
-    // // Configure connection resiliency
-    // options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-    //     sqlServerOptionsAction: sqlOptions =>
-    //     {
-    //         sqlOptions.EnableRetryOnFailure(
-    //             maxRetryCount: 5,
-    //             maxRetryDelay: TimeSpan.FromSeconds(30),
-    //             errorNumbersToAdd: null);
-    //     });
-    // // Configure warnings
-    // options.ConfigureWarnings(warnings =>
-    // {
-    //     warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning);
-    // });
-});
+          options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //sql lite 
-// builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//       options.UseSqlite("Data Source = Hrdummy.db"));
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//      options.UseSqlite("Data Source = Hrdummya.db"));
 
 
 //add identity role in DI container
@@ -94,6 +79,9 @@ builder.Services.AddAuthentication(option =>
 
 builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository>();
+builder.Services.AddScoped<ILeaveAllocationService, LeaveAllocationService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -144,28 +132,6 @@ app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();    
 app.UseAuthorization();
-
-// Add this after building the app but before app.Run()
-try
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        
-        // Ensure database is created
-        db.Database.EnsureCreated();
-        
-        // Instead of Migrate(), which requires migrations to be up-to-date
-        if (db.Database.CanConnect())
-        {
-            // Optional: Add any seed data here if needed
-        }
-    }
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"An error occurred while migrating the database: {ex.Message}");
-}
 
 app.MapControllers();
 
