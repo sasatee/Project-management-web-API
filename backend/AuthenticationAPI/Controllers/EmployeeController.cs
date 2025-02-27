@@ -1,15 +1,9 @@
 ﻿using AuthenticationAPI.DTOs;
-<<<<<<< HEAD
-using AuthenticationAPI.Repository.IRepository;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-=======
 using AuthenticationAPI.Repository;
 using AuthenticationAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims; 
->>>>>>> origin/master
 
 namespace AuthenticationAPI.Controllers
 {
