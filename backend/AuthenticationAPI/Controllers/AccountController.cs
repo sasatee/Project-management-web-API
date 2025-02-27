@@ -203,7 +203,7 @@ namespace AuthenticationAPI.Controllers
         /// <response code="200">Returns the list of all users.</response>
         /// <response code="403">Forbidden. Only Admin has access to this resource.</response>
         [HttpGet("details")]
-        [Authorize(Roles="Admin")]
+        [Authorize(Roles="ADMIN")]
         public async Task<ActionResult<IEnumerable<UserDetailDto>>> GetAllUsers()
         {
 
