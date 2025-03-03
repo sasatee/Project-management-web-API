@@ -2,7 +2,6 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
@@ -28,8 +27,17 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Create directory for SQLite database
-RUN mkdir -p /app/data && \
-    chown -R $APP_UID:$APP_UID /app/data
+# Install EF Core tools
+RUN dotnet tool install --global dotnet-ef
 
-ENTRYPOINT ["dotnet", "AuthenticationAPI.dll"]
+# Add dotnet tools to PATH
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# Create directory for SQLite database and set permissions
+RUN mkdir -p /app/data && \
+    chmod 777 /app/data
+
+# Create and run startup script
+COPY AuthenticationAPI/startup.sh /app/
+RUN chmod +x /app/startup.sh
+CMD ["/bin/bash", "/app/startup.sh"]
