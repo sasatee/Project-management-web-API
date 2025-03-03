@@ -30,8 +30,11 @@ WORKDIR /app
 COPY . /src/
 WORKDIR /src/AuthenticationAPI
 
-# Copy published files
-COPY --from=publish /app/publish .
+# Restore the project for migrations
+RUN dotnet restore
+
+# Copy published files to /app
+COPY --from=publish /app/publish /app/
 
 # Install EF Core tools
 RUN dotnet tool install --global dotnet-ef
@@ -44,7 +47,7 @@ RUN mkdir -p /app/data && \
     chmod 777 /app/data
 
 # Copy startup script
-COPY AuthenticationAPI/startup.sh .
-RUN chmod +x startup.sh
+COPY AuthenticationAPI/startup.sh /app/
+RUN chmod +x /app/startup.sh
 
-CMD ["/bin/bash", "startup.sh"]
+CMD ["/bin/bash", "/app/startup.sh"]
