@@ -27,9 +27,4 @@ RUN dotnet publish "./AuthenticationAPI.csproj" -c $BUILD_CONFIGURATION -o /app/
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-
-# Create directory for SQLite database
-RUN mkdir -p /app/data && \
-    chown -R $APP_UID:$APP_UID /app/data
-
 ENTRYPOINT ["dotnet", "AuthenticationAPI.dll"]
