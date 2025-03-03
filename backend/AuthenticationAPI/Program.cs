@@ -25,25 +25,19 @@ var builder = WebApplication.CreateBuilder(args);
 //        });
 //});
 
-
-
 var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
-
 // Add services to the container.
-
 
 // Configure database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"),
     sqliteOptions => sqliteOptions.MigrationsAssembly("AuthenticationAPI")));
 
-
 //add identity role in DI container
 builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-
 
 //add authentication in DI container
 builder.Services.AddAuthentication(option =>
@@ -66,12 +60,8 @@ builder.Services.AddAuthentication(option =>
             ValidAudience = JWTSetting["ValidAudience"],
             ValidIssuer = JWTSetting["ValidIssuer"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTSetting.GetSection("securityKey").Value!))
-
-
         };
     });
-
-
 
 builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
@@ -84,7 +74,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(u =>
 {
-
     u.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = @"Jwt Authorization Example: 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsIm5hbWUiOiJzYXJ2YW0iLCJuYW1laWQiOiI4Zjk5ODgxZS05ZTc2LTQxNmQtOGJlZi0wZTI5ODQ5MmVkZWMiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjQ1MDAiLCJyb2xlIjoiQWRtaW4iLCJuYmYiOjE3MjkxMzM2OTksImV4cCI6MTcyOTIyMDA5OSwiaWF0IjoxNzI5MTMzNjk5fQ.mNDos14BiLimZFbeG6pqWJs8seZ6Od4ucn9JzOZlJ9E'",
@@ -102,7 +91,6 @@ builder.Services.AddSwaggerGen(u =>
             {
                 Type = ReferenceType.SecurityScheme,
                 Id = "Bearer"
-
             },
             Scheme = "oauth2",
             Name = "Bearer ",
@@ -111,9 +99,7 @@ builder.Services.AddSwaggerGen(u =>
         new List<string>()
         }
     });
-
 });
-
 
 var app = builder.Build();
 
@@ -130,5 +116,21 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Run database migrations
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        context.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+    }
+}
 
 app.Run();
