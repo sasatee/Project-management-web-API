@@ -40,7 +40,7 @@ var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
 //sql lite 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-      options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+      options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection1")));
 
 
 //add identity role in DI container
