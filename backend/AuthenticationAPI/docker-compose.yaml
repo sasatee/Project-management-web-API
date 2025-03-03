@@ -25,6 +25,7 @@ services:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=HrManagmentProd@1
       - MSSQL_PID=Developer
+      - MSSQL_MEMORY_LIMIT_MB=2048
     ports:
       - "1400:1433"
     volumes:
@@ -32,12 +33,13 @@ services:
     networks:
       - auth-network
     restart: unless-stopped
+    mem_limit: 2GB
     healthcheck:
-      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "HrManagmentProd@1" -Q "SELECT 1" -b -1
-      interval: 10s
-      retries: 10
-      start_period: 30s
-      # timeout: 3s
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "HrManagmentProd@1" -Q "SELECT 1" || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
 networks:
   auth-network:
