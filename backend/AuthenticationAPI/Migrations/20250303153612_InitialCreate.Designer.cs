@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthenticationAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250303153228_InitialCreate")]
+    [Migration("20250303153612_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
