@@ -4,7 +4,8 @@
 sleep 5
 
 # Apply migrations
-dotnet ef database update --project AuthenticationAPI.csproj
+cd /app
+dotnet ef database update
 
 # Start the application
 dotnet AuthenticationAPI.dll 

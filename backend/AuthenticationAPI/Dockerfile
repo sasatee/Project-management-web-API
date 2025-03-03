@@ -26,6 +26,7 @@ RUN dotnet publish "./AuthenticationAPI.csproj" -c $BUILD_CONFIGURATION -o /app/
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY --from=build /src/AuthenticationAPI/Migrations ./Migrations
 
 # Install EF Core tools
 RUN dotnet tool install --global dotnet-ef
