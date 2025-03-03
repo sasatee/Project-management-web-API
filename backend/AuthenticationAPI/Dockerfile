@@ -25,8 +25,13 @@ RUN dotnet publish "./AuthenticationAPI.csproj" -c $BUILD_CONFIGURATION -o /app/
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS final
 WORKDIR /app
+
+# Copy the entire project for migrations
+COPY . /src/
+WORKDIR /src/AuthenticationAPI
+
+# Copy published files
 COPY --from=publish /app/publish .
-COPY --from=build /src/AuthenticationAPI/Migrations ./Migrations
 
 # Install EF Core tools
 RUN dotnet tool install --global dotnet-ef
@@ -38,7 +43,8 @@ ENV PATH="${PATH}:/root/.dotnet/tools"
 RUN mkdir -p /app/data && \
     chmod 777 /app/data
 
-# Create and run startup script
-COPY AuthenticationAPI/startup.sh /app/
-RUN chmod +x /app/startup.sh
-CMD ["/bin/bash", "/app/startup.sh"]
+# Copy startup script
+COPY AuthenticationAPI/startup.sh .
+RUN chmod +x startup.sh
+
+CMD ["/bin/bash", "startup.sh"]
