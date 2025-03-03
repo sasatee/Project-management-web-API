@@ -9,7 +9,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Data Source=HumanResourceManagement.db
     volumes:
       - sqlite-data:/app/data
     restart: unless-stopped
