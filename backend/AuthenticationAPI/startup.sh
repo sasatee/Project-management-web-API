@@ -4,7 +4,6 @@
 sleep 5
 
 # Apply migrations
-cd /app
 dotnet ef database update
 
 # Start the application
