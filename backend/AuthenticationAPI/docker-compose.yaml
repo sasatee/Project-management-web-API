@@ -10,9 +10,9 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__DefaultConnection=Server=sql-server;Database=HumanResourceManagement;User Id=sa;Password=HrManagmentProd@1;TrustServerCertificate=True;MultipleActiveResultSets=true;ConnectRetryCount=5;ConnectRetryInterval=10
-    depends_on:
-      sql-server:
-        condition: service_healthy
+    # depends_on:
+    #   sql-server:
+    #     condition: service_healthy
     # networks:
     #   - auth-network
     # restart: unless-stopped
@@ -36,7 +36,7 @@ services:
       test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "HrManagmentProd@1" -Q "SELECT 1" -b -1
       interval: 10s
       retries: 10
-      # start_period: 30s
+      start_period: 30s
       # timeout: 3s
 
 networks:
