@@ -14,16 +14,17 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add CORS policy
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowFrontend",
-//        builder =>
-//        {
-//            builder.WithOrigins("http://localhost:5173")
-//                   .AllowAnyHeader()
-//                   .AllowAnyMethod();
-//        });
-//});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
+
 
 var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
