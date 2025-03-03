@@ -26,6 +26,9 @@ RUN dotnet publish "./AuthenticationAPI.csproj" -c $BUILD_CONFIGURATION -o /app/
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS final
 WORKDIR /app
 
+# Install SQLite tools
+RUN apt-get update && apt-get install -y sqlite3
+
 # Copy the entire project for migrations
 COPY . /src/
 WORKDIR /src/AuthenticationAPI
@@ -49,5 +52,9 @@ RUN mkdir -p /app/data && \
 # Copy startup script
 COPY AuthenticationAPI/startup.sh /app/
 RUN chmod +x /app/startup.sh
+
+# Set environment variables
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ConnectionStrings__DefaultConnection="Data Source=/app/data/auth.db"
 
 CMD ["/bin/bash", "/app/startup.sh"]
