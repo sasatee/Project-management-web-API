@@ -260,7 +260,8 @@ namespace AuthenticationAPI.Controllers
 
         }
 
-
+        [Authorize]
+        [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
         {
             var user = await _userManager.FindByEmailAsync(changePasswordDto.Email);
@@ -355,11 +356,11 @@ namespace AuthenticationAPI.Controllers
                 Users = users
             });
         }
-        
+
     }
 
 
-   
+
 
 
 
