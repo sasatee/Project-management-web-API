@@ -21,7 +21,7 @@ export default function Login() {
 
     try {
       const auth = await loginAction({ email, password });
-      if (auth.user.roles.includes('Admin')) {
+      if (auth.user.roles.includes('ADMIN')) {
         navigate('/dashboard');
       } else {
         navigate('/');

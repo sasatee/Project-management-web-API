@@ -1,7 +1,7 @@
 import { redirect } from 'react-router-dom';
 import { axiosInstance } from './axios';
 
-export type Role = 'Admin' | 'Customer';
+export type Role = 'ADMIN' | 'Customer';
 
 export type User = {
   id: string;

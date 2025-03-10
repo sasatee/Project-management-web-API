@@ -20,22 +20,22 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
-        loader: protectRoute(['Customer', 'Admin']),
+        loader: protectRoute(['Customer', 'ADMIN']),
       },
       {
         path: 'dashboard',
         element: <Dashboard />,
-        loader: protectRoute(['Admin']),
+        loader: protectRoute(['ADMIN']),
       },
       {
         path: 'users',
         element: <Users />,
-        loader: protectRoute(['Admin']),
+        loader: protectRoute(['ADMIN']),
       },
       {
         path: 'settings',
         element: <Settings />,
-        loader: protectRoute(['Admin']),
+        loader: protectRoute(['ADMIN']),
       },
     ],
   },

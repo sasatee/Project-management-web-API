@@ -29,7 +29,7 @@ export default function Root() {
     navigate('/login');
   };
 
-  const isAdmin = hasRole(['Admin']);
+  const isADMIN = hasRole(['ADMIN']);
 
   if (!user) {
     return null;
@@ -69,7 +69,7 @@ export default function Root() {
               {sidebarOpen && <span className="ml-2">Home</span>}
             </Button>
 
-            {isAdmin && (
+            {isADMIN && (
               <>
                 <Button
                   variant="ghost"

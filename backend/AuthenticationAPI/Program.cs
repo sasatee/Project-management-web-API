@@ -16,13 +16,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add CORS policy
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        builder =>
-        {
-            builder.AllowAnyOrigin()
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithExposedHeaders("Authorization");
+    });
 });
 
 
@@ -37,7 +38,7 @@ var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 //add database 
 //sql server database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-          options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //sql lite 
 //builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -49,35 +50,29 @@ builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-
-//add authentication in DI container
+// Add authentication in DI container
 builder.Services.AddAuthentication(option =>
 {
     option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-
-}).AddJwtBearer(
-    option =>
+}).AddJwtBearer(option =>
+{
+    option.SaveToken = true;
+    option.RequireHttpsMetadata = false;
+    option.TokenValidationParameters = new TokenValidationParameters
     {
-        option.SaveToken = true;
-        option.RequireHttpsMetadata = false;
-        option.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidAudience = JWTSetting["ValidAudience"],
-            ValidIssuer = JWTSetting["ValidIssuer"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTSetting.GetSection("securityKey").Value!))
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidAudience = JWTSetting["ValidAudience"],
+        ValidIssuer = JWTSetting["ValidIssuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTSetting.GetSection("securityKey").Value!))
+    };
+});
 
-
-        };
-    });
-
-
-
+// Add your services
 builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
@@ -89,36 +84,33 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(u =>
 {
-
     u.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = @"Jwt Authorization Example: 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsIm5hbWUiOiJzYXJ2YW0iLCJuYW1laWQiOiI4Zjk5ODgxZS05ZTc2LTQxNmQtOGJlZi0wZTI5ODQ5MmVkZWMiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjQ1MDAiLCJyb2xlIjoiQWRtaW4iLCJuYmYiOjE3MjkxMzM2OTksImV4cCI6MTcyOTIyMDA5OSwiaWF0IjoxNzI5MTMzNjk5fQ.mNDos14BiLimZFbeG6pqWJs8seZ6Od4ucn9JzOZlJ9E'",
+        Description = @"Jwt Authorization Example: 'bearer [token]'",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer "
+        Scheme = "Bearer"
     });
 
     u.AddSecurityRequirement(new OpenApiSecurityRequirement() {
-    {
-        new OpenApiSecurityScheme
         {
-            Reference = new OpenApiReference
+            new OpenApiSecurityScheme
             {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
 
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
             },
-            Scheme = "oauth2",
-            Name = "Bearer ",
-            In = ParameterLocation.Header,
-        },
-        new List<string>()
+            new List<string>()
         }
     });
-
 });
-
 
 var app = builder.Build();
 
@@ -127,15 +119,37 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
+    // Remove HTTPS redirection in development
+  //  app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
-app.UseCors("AllowFrontend");
-app.UseAuthentication();    
-app.UseAuthorization();
+// Use CORS before other middleware
+app.UseCors("AllowAll"); // Changed from "AllowFrontend" to match the policy name
+//app.UseCors("AllowFrontend");
 
+
+
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Run database migrations
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        context.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+    }
+}
 
 app.Run();
