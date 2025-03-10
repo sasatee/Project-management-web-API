@@ -16,11 +16,13 @@ namespace AuthenticationAPI.Repository
 
         private readonly UserManager<AppUser> _userManager;
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public EmployeeRepository(UserManager<AppUser> userManager, ApplicationDbContext context)
+        public EmployeeRepository(UserManager<AppUser> userManager, ApplicationDbContext context, IConfiguration configuration)
         {
             _userManager = userManager;
             _context = context;
+            _configuration = configuration;
         }
 
         public async Task<List<UserDetailDto>> GetEmployees()
@@ -70,8 +72,8 @@ namespace AuthenticationAPI.Repository
         public async Task<IResult> CreateEmployee(string employeeGuid, EmployeeDto empDto)
         {
             // Check if user already exists
-            // var alreadyExist = await Exists(employeeGuid);
-            // if (alreadyExist) return Results.BadRequest(new { isSuccess = false, message = "Employee already exists." });
+            var alreadyExist = await Exists(employeeGuid);
+            if (alreadyExist) return Results.BadRequest(new { isSuccess = false, message = "Employee already exists." });
 
             // Begin transaction
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -101,16 +103,17 @@ namespace AuthenticationAPI.Repository
                     PhoneNumber = empDto.Phone,
                     DateJoined = DateTime.UtcNow
                 };
-
-                // Create user with default password "Employee@123"
-                var result = await _userManager.CreateAsync(appUser, "Employee@123");
+                var setDefaultPasswordForEmployee = _configuration.GetSection("Employee").GetSection("EmployeeDefaultPassword").Value!;
+                // Create user with default password 
+                var result = await _userManager.CreateAsync(appUser, setDefaultPasswordForEmployee);
                 if (!result.Succeeded)
                 {
                     return Results.BadRequest(new { isSuccess = false, message = "Failed to create user account", errors = result.Errors });
                 }
 
+                var setDefaultRoleAsEmployee = _configuration.GetSection("Employee").GetSection("EmployeeRole").Value!;
                 // Assign EMPLOYEE role
-                await _userManager.AddToRoleAsync(appUser, "EMPLOYEE");
+                await _userManager.AddToRoleAsync(appUser, setDefaultRoleAsEmployee);
 
                 // Create Employee record
                 var employee = new Employee
@@ -124,7 +127,8 @@ namespace AuthenticationAPI.Repository
                     DepartmentId = empDto.DepartmentId,
                     JobTitleId = empDto.JobTitleId,
                     AppUserId = appUser.Id,
-                    DateOfJoining = DateTime.UtcNow
+                    DateOfJoining = DateTime.UtcNow,
+                    DateOfLeaving = DateTime.UtcNow,
                 };
 
                 await _context.Employees.AddAsync(employee);
@@ -136,7 +140,7 @@ namespace AuthenticationAPI.Repository
                     message = "Employee created successfully",
                     employeeDetails = new {
                         email = empDto.Email,
-                        defaultPassword = "Employee@123"
+                        defaultPassword = $"{setDefaultPasswordForEmployee}"
                     }
                 });
             }

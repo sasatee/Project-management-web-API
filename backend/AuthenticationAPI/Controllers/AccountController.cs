@@ -23,6 +23,7 @@ namespace AuthenticationAPI.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
 
+
         public AccountController(
             UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
@@ -99,12 +100,16 @@ namespace AuthenticationAPI.Controllers
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var resetLink = $"http://localhost:4200/reset-password?email={user.Email}&token={WebUtility.UrlEncode(token)}";
+            var resetUrl = _configuration.GetSection("EmailSetting").GetSection("ResetUrl").Value!; //http://localhost:4200/reset-password?email=
+            var resetLink = $"{resetUrl}{user.Email}&token={WebUtility.UrlEncode(token)}";
+
+            var password = _configuration.GetSection("EmailSetting").GetSection("password").Value!;
+            var emailSupport = _configuration.GetSection("EmailSetting").GetSection("supportEmail").Value!;
 
             // Send the reset link via email
-            var fromAddress = new MailAddress("sarvam2601@gmail.com", "Sasatee Support");
+            var fromAddress = new MailAddress(emailSupport, "Sasatee Support");
             var toAddress = new MailAddress(user.Email ?? throw new ArgumentNullException(nameof(user.Email)));
-            const string fromPassword = "hkcf nufq zbrm heoq"; // Use a secure way to store and retrieve your password
+            string fromPassword = password; // Use a secure way to store and retrieve your password
             const string subject = "Password Reset";
             string body = $"Please reset your password using the following link: {resetLink}";
 

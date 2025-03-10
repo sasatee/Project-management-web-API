@@ -11,6 +11,9 @@ namespace Payroll.Model
         public string Phone { get; set; }
         public string Address { get; set; }
         public DateTime DateOfJoining { get; set; }
+
+        public DateTime DateOfLeaving { get; set; }
+
         public Guid? DepartmentId { get; set; }
         public Department? Department { get; set; }
         public Guid? JobTitleId { get; set; }

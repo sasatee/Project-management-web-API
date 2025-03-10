@@ -32,8 +32,8 @@ builder.Services.AddCors(options =>
 var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
 
-// Add services to the container.
 
+// Add services to the container.
 
 //add database 
 //sql server database
@@ -43,6 +43,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 //sql lite 
 //builder.Services.AddDbContext<ApplicationDbContext>(options =>
 //      options.UseSqlite("Data Source = Hrdummya.db"));
+
 
 
 //add identity role in DI container
@@ -72,12 +73,13 @@ builder.Services.AddAuthentication(option =>
     };
 });
 
-// Add your services
+// Add your services and repository  implementation
 builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository>();
 builder.Services.AddScoped<ILeaveAllocationService, LeaveAllocationService>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
