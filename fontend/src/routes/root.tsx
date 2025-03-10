@@ -11,6 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 import { getAuthState, logoutAction, hasRole } from '@/lib/auth';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function Root() {
   const navigate = useNavigate();
@@ -41,83 +42,92 @@ export default function Root() {
         {/* Sidebar */}
         <div
           className={cn(
-            'bg-card border-r p-4 transition-all duration-300',
-            sidebarOpen ? 'w-64' : 'w-20'
+            'border-r bg-background transition-all duration-300 flex flex-col',
+            sidebarOpen ? 'w-64' : 'w-16'
           )}
         >
-          <div className="flex items-center gap-2 mb-8">
+          {/* Header */}
+          <div className="flex h-14 items-center border-b px-2">
             <Button
-              variant="ghost"
-              size="icon"
+              variant="secondary"
+              size="sm"
+              className="ml-1 hover:bg-accent/50"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
-              <Menu className="h-6 w-6" />
+              <Menu className="h-5 w-5" />
             </Button>
-            {sidebarOpen && <h1 className="text-xl font-bold">Dashboard</h1>}
+            {sidebarOpen && (
+              <span className="ml-3 text-lg font-semibold">Dashboard</span>
+            )}
           </div>
-          
-          <nav className="space-y-2">
+
+          {/* Navigation */}
+          <div className="flex-1 space-y-1 p-2">
             <Button
-              variant="ghost"
+              variant="secondary"
               className={cn(
-                'w-full justify-start',
-                location.pathname === '/' && 'bg-accent'
+                'w-full justify-start gap-3 text-sm font-normal hover:bg-accent/50',
+                location.pathname === '/' && 'bg-accent/50 font-medium'
               )}
               onClick={() => navigate('/')}
             >
-              <Home className="h-4 w-4" />
-              {sidebarOpen && <span className="ml-2">Home</span>}
+              <Home className="h-5 w-5" />
+              {sidebarOpen && <span>Home</span>}
             </Button>
 
             {isADMIN && (
               <>
                 <Button
-                  variant="ghost"
+                  variant="secondary"
                   className={cn(
-                    'w-full justify-start',
-                    location.pathname === '/dashboard' && 'bg-accent'
+                    'w-full justify-start gap-3 text-sm font-normal hover:bg-accent/50',
+                    location.pathname === '/dashboard' && 'bg-accent/50 font-medium'
                   )}
                   onClick={() => navigate('/dashboard')}
                 >
-                  <LayoutDashboard className="h-4 w-4" />
-                  {sidebarOpen && <span className="ml-2">Dashboard</span>}
+                  <LayoutDashboard className="h-5 w-5" />
+                  {sidebarOpen && <span>Dashboard</span>}
                 </Button>
-                
+
                 <Button
-                  variant="ghost"
+                  variant="secondary"
                   className={cn(
-                    'w-full justify-start',
-                    location.pathname === '/users' && 'bg-accent'
+                    'w-full justify-start gap-3 text-sm font-normal hover:bg-accent/50',
+                    location.pathname === '/users' && 'bg-accent/50 font-medium'
                   )}
                   onClick={() => navigate('/users')}
                 >
-                  <Users className="h-4 w-4" />
-                  {sidebarOpen && <span className="ml-2">Users</span>}
+                  <Users className="h-5 w-5" />
+                  {sidebarOpen && <span>Users</span>}
                 </Button>
-                
+
                 <Button
-                  variant="ghost"
+                  variant="secondary"
                   className={cn(
-                    'w-full justify-start',
-                    location.pathname === '/settings' && 'bg-accent'
+                    'w-full justify-start gap-3 text-sm font-normal hover:bg-accent/50',
+                    location.pathname === '/settings' && 'bg-accent/50 font-medium'
                   )}
                   onClick={() => navigate('/settings')}
                 >
-                  <Settings className="h-4 w-4" />
-                  {sidebarOpen && <span className="ml-2">Settings</span>}
+                  <Settings className="h-5 w-5" />
+                  {sidebarOpen && <span>Settings</span>}
                 </Button>
               </>
             )}
-          </nav>
+          </div>
 
-          <div className="absolute bottom-4" style={{ width: sidebarOpen ? '14rem' : '4rem' }}>
+          {/* Footer */}
+          <div className="border-t p-2">
+            <div className="mb-2">
+              <ThemeToggle />
+            </div>
             <Button
-              variant="ghost"
-              className="w-full justify-start text-destructive"
+              variant="secondary"
+              className="w-full justify-start gap-3 text-sm font-normal text-muted-foreground hover:bg-accent/50 hover:text-foreground"
               onClick={handleLogout}
             >
-              <LogOut className="h-4 w-4" />
-              {sidebarOpen && <span className="ml-2">Logout</span>}
+              <LogOut className="h-5 w-5" />
+              {sidebarOpen && <span>Logout</span>}
             </Button>
           </div>
         </div>

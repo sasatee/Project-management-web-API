@@ -2,25 +2,52 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { loginAction } from '@/lib/auth';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+
+const loginSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  async function onSubmit(data: LoginFormValues) {
     setIsLoading(true);
 
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-
     try {
-      const auth = await loginAction({ email, password });
+      const auth = await loginAction(data);
       if (auth.user.roles.includes('ADMIN')) {
         navigate('/dashboard');
       } else {
@@ -38,37 +65,63 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
-        <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold">Welcome back</h1>
-          <p className="text-muted-foreground">Enter your credentials to continue</p>
-        </div>
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              placeholder="your@email.com"
-              required
-              type="email"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              name="password"
-              placeholder="••••••••"
-              required
-              type="password"
-            />
-          </div>
-          <Button className="w-full" type="submit" disabled={isLoading}>
-            {isLoading ? 'Signing in...' : 'Sign in'}
-          </Button>
-        </form>
+    <div className="absolute inset-0 flex items-center justify-center bg-background">
+      <div className="w-[400px]">
+        <Card className="shadow-md">
+          <CardHeader className="space-y-1.5 p-6">
+            <h1 className="text-2xl font-semibold">Welcome back</h1>
+            <p className="text-sm text-muted-foreground">Enter your credentials to continue</p>
+          </CardHeader>
+          <CardContent className="p-6 pt-0">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm">Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="your@email.com"
+                          type="email"
+                          className="h-9"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-destructive" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm">Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="••••••••"
+                          type="password"
+                          className="h-9"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-destructive" />
+                    </FormItem>
+                  )}
+                />
+                <Button 
+                  className="w-full bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200" 
+                  type="submit" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Signing in...' : 'Sign in'}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

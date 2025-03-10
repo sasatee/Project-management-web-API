@@ -1,11 +1,12 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { Toaster } from '@/components/ui/toaster';
+import { ThemeProvider } from '@/components/theme-provider';
 import Root from './routes/root';
 import Login from './routes/login';
 import Dashboard from './routes/dashboard';
 import Users from './routes/users';
 import Settings from './routes/settings';
 import Home from './routes/home';
-import { Toaster } from '@/components/ui/toaster';
 import { protectRoute } from './lib/auth';
 
 const router = createBrowserRouter([
@@ -41,11 +42,13 @@ const router = createBrowserRouter([
   },
 ]);
 
-export default function App() {
+function App() {
   return (
-    <>
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <RouterProvider router={router} />
       <Toaster />
-    </>
+    </ThemeProvider>
   );
 }
+
+export default App;
