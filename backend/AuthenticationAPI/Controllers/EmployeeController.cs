@@ -1,8 +1,8 @@
 ﻿using AuthenticationAPI.DTOs;
-using AuthenticationAPI.Repository;
 using AuthenticationAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Payroll.Model;
 using System.Security.Claims;
 
 namespace AuthenticationAPI.Controllers
@@ -12,13 +12,15 @@ namespace AuthenticationAPI.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeRepository _employeeRepository;
-        public EmployeeController(IEmployeeRepository employeeRepository)
+        private readonly IRepository<Employee> _EmpRepo;
+        public EmployeeController(IEmployeeRepository employeeRepository,IRepository<Employee> employmentRepo)
         {
             _employeeRepository = employeeRepository;
+            _EmpRepo = employmentRepo;
 
         }
 
-        [Authorize(Roles = "ADMIN")]
+        //[Authorize(Roles = "ADMIN")]
         [HttpGet("employees")]
         public async Task<ActionResult<List<UserDetailDto>>> GetEmployees()
         {
@@ -27,7 +29,7 @@ namespace AuthenticationAPI.Controllers
             return Ok(new { employees, employeeCount });
         }
 
-        [Authorize(Roles = "ADMIN")]
+       // [Authorize(Roles = "ADMIN")]
         [HttpPost("create-a-employee")]
         public async Task<IActionResult> CreateEmployee([FromBody] EmployeeDto employeeDto)
         {
@@ -41,30 +43,6 @@ namespace AuthenticationAPI.Controllers
         }
 
 
-        //[Authorize]
-        //[HttpPost("change-password")]
-        //public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //    if (string.IsNullOrEmpty(userId))
-        //    {
-        //        return Unauthorized(new { isSuccess = false, message = "User ID not found" });
-        //    }
-
-
-        //    var result = await _employeeRepository.ChangePassword(userId, model.CurrentPassword, model.NewPassword);
-
-        //    // Convert IResult to IActionResult
-        //    if (result is ObjectResult objectResult)
-        //    {
-        //        return objectResult;
-        //    }
-        //    return StatusCode(500, new { isSuccess = false, message = "An unexpected error occurred" });
-        //}
+      
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AuthenticationAPI.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Payroll.Model
 {
@@ -12,8 +13,9 @@ namespace Payroll.Model
         public string Address { get; set; }
         public DateTime DateOfJoining { get; set; }
 
-        public DateTime DateOfLeaving { get; set; }
+        // public DateTime DateOfLeaving { get; set; }
 
+        [ForeignKey(nameof(Department))]
         public Guid? DepartmentId { get; set; }
         public Department? Department { get; set; }
         public Guid? JobTitleId { get; set; }

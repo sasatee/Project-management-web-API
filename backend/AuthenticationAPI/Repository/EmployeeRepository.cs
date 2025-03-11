@@ -25,24 +25,31 @@ namespace AuthenticationAPI.Repository
             _configuration = configuration;
         }
 
-        public async Task<List<UserDetailDto>> GetEmployees()
+        public async Task<List<GetUserEmployeeDto>> GetEmployees()
         {
-            var employees = await _userManager.GetUsersInRoleAsync("EMPLOYEE");
-            var userDetailDtos = await Task.WhenAll(employees.Select(async user =>
+            var roleAsEmployee = await _userManager.GetUsersInRoleAsync("EMPLOYEE");
+            var GetUserEmployeeDto = new List<GetUserEmployeeDto>();
+
+            foreach (var user in roleAsEmployee)
             {
+                var employee = await _context.Employees
+                    .Where(e => e.AppUserId == user.Id)
+                    .FirstOrDefaultAsync();
+
                 var roles = await _userManager.GetRolesAsync(user);
-                return new UserDetailDto
+                GetUserEmployeeDto.Add(new GetUserEmployeeDto
                 {
-                    Id = user.Id,
+                    Id = Guid.Parse(user.Id),
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Roles = roles.ToList(),
                     AppUserId = user.Id,
+                    EmployeeId = employee?.Id
+                });
+            }
 
-                };
-            }));
-            return userDetailDtos.ToList();
+            return GetUserEmployeeDto;
         }
 
 
@@ -56,9 +63,9 @@ namespace AuthenticationAPI.Repository
             return new UserDetailDto
             {
                 Id = user.Id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
+                Email = user.Email ?? string.Empty,
+                FirstName = user.FirstName ?? string.Empty,
+                LastName = user.LastName ?? string.Empty,
                 Roles = roles.ToList()
             };
         }
@@ -128,17 +135,19 @@ namespace AuthenticationAPI.Repository
                     JobTitleId = empDto.JobTitleId,
                     AppUserId = appUser.Id,
                     DateOfJoining = DateTime.UtcNow,
-                    DateOfLeaving = DateTime.UtcNow,
+                    // DateOfLeaving = DateTime.UtcNow,
                 };
 
                 await _context.Employees.AddAsync(employee);
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return Results.Ok(new { 
-                    isSuccess = true, 
+                return Results.Ok(new
+                {
+                    isSuccess = true,
                     message = "Employee created successfully",
-                    employeeDetails = new {
+                    employeeLoginCredential = new
+                    {
                         email = empDto.Email,
                         defaultPassword = $"{setDefaultPasswordForEmployee}"
                     }
@@ -150,23 +159,7 @@ namespace AuthenticationAPI.Repository
                 return Results.BadRequest(new { isSuccess = false, message = "Failed to create employee", error = ex.Message });
             }
         }
-         
 
-    public async Task<IActionResult> ChangePassword(string userId, string currentPassword, string newPassword)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return new NotFoundObjectResult(new { isSuccess = false, message = "User not found" });
-            }
 
-            var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
-            if (result.Succeeded)
-            {
-                return new OkObjectResult(new { isSuccess = true, message = "Password changed successfully" });
-            }
-
-            return new BadRequestObjectResult(new { isSuccess = false, message = "Failed to change password", errors = result.Errors });
-        }
     }
 }
