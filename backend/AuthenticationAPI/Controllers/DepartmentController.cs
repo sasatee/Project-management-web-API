@@ -56,7 +56,7 @@ namespace AuthenticationAPI.Controllers
             Console.WriteLine(department);
             if (department == null)
             {
-                return NotFound(new { AuthResponse = new AuthResponseDto { isSuccess = false, Message = "Department not found" } });
+                return NotFound(new { isSuccess = false, Message = "Department not found" } );
             }
 
             department.DepartmentName = model.DepartmentName;
@@ -65,7 +65,7 @@ namespace AuthenticationAPI.Controllers
              _departmentRepository.Update(department);
             await _departmentRepository.SaveChangesAsync();
 
-            return Ok(new { AuthResponse = new AuthResponseDto { isSuccess = true, Message = "Successfully updated department" }, Result = model });
+            return Ok(new  { isSuccess = true, Message = "Successfully updated department", Result = model } );
         }
 
         [HttpGet("{id}")]
@@ -74,7 +74,7 @@ namespace AuthenticationAPI.Controllers
 
             var result  = await _departmentRepository.FindByIdAsync(id);
 
-            return Ok(new { AuthResponse = new AuthResponseDto { isSuccess = true, Message = "Successfully updated department" }, Result = result });
+            return Ok(new { isSuccess = true, Message = "Successfully updated department", Result = result } );
 
         }
 
@@ -84,7 +84,7 @@ namespace AuthenticationAPI.Controllers
 
             var result = await _departmentRepository.GetAll();
 
-            return Ok(new { AuthResponse = new AuthResponseDto { isSuccess = true, Message = "Successfully get all department" }, Result = result });
+            return Ok(new  { isSuccess = true, Message = "Successfully get all department", Result = result });
 
         }
 
@@ -94,7 +94,7 @@ namespace AuthenticationAPI.Controllers
         {
             await _departmentRepository.DeleteAsync(id);
             await _departmentRepository.SaveChangesAsync();
-            return Ok(new { AuthResponse = new AuthResponseDto { isSuccess = true, Message = "Successfully deleted department" } });
+            return Ok(new  { isSuccess = true, Message = "Successfully deleted department" } );
         }
     }
 }

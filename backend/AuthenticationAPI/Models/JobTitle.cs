@@ -1,4 +1,6 @@
-﻿namespace Payroll.Model
+﻿using Newtonsoft.Json;
+
+namespace Payroll.Model
 {
     public class JobTitle
     {
@@ -8,5 +10,4 @@
         public int Grade { get; set; }
         public ICollection<Employee> Employees { get; set; }
     }
-
 }

@@ -1,6 +1,8 @@
 ﻿using AuthenticationAPI.Data;
 using AuthenticationAPI.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq.Expressions;
 
 namespace AuthenticationAPI.Repository
 {
@@ -40,6 +42,13 @@ namespace AuthenticationAPI.Repository
             return list;
         }
 
+
+        public async Task<List<T>> GetAll(Expression<Func<T,bool>> filter)
+        {
+            var list = await dbSet.AsQueryable().Where(filter).ToListAsync();
+            return list;
+        }
+
         public async Task<int> SaveChangesAsync()
         {
             
@@ -52,6 +61,23 @@ namespace AuthenticationAPI.Repository
             dbSet.Update(entity);
         }
 
+        public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        {
+            IQueryable<T> query = dbSet;
+            query = query.Where(filter);
 
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var Includeproperty in includeProperties
+                   .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+
+                    query = query.Include(Includeproperty);
+
+
+                }
+            }
+            return query?.FirstOrDefault();
+        }
     }
 }

@@ -74,6 +74,9 @@ builder.Services.AddAuthentication(option =>
     };
 });
 
+//Iconfiguration as singleton dp 
+//builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
 // Add your services and repository  implementation
 builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
@@ -81,9 +84,12 @@ builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository>();
 builder.Services.AddScoped<ILeaveAllocationService, LeaveAllocationService>();
 
+
 //Generic repository implementation 
 builder.Services.AddScoped<IRepository<Department>, Repository<Department>>();
 builder.Services.AddScoped<IRepository<Employee>, Repository<Employee>>();
+builder.Services.AddScoped<IRepository<JobTitle>, Repository<JobTitle>>();
+
 
 
 
