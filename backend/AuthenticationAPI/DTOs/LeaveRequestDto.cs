@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 public class LeaveRequestDto
 {
 
-public Guid EmployeeId {get; set;}
+public Guid Id {get; set;}
 
 public DateTime StartDate {get; set;}
 public DateTime EndDate {get; set;}
