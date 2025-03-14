@@ -28,7 +28,7 @@ namespace AuthenticationAPI.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "ADMIN,EMPLOYEE")]
         public async Task<ActionResult<IEnumerable<LeaveRequestDto>>> GetLeaveRequests()
         {
             var leaveRequests = await _leaveRequestrepository.GetAllAsync();
