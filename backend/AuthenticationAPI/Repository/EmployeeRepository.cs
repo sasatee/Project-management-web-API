@@ -135,7 +135,7 @@ namespace AuthenticationAPI.Repository
                     JobTitleId = empDto.JobTitleId,
                     AppUserId = appUser.Id,
                     DateOfJoining = DateTime.UtcNow,
-                    // DateOfLeaving = DateTime.UtcNow,
+                     DateOfLeaving = DateTime.UtcNow,
                 };
 
                 await _context.Employees.AddAsync(employee);

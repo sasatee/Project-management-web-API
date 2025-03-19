@@ -42,6 +42,7 @@ namespace AuthenticationAPI.Controllers
                     e.Phone,
                     e.Address,
                     e.DateOfJoining,
+                    e.DateOfLeaving,
                     e.DepartmentId,
                     e.JobTitleId,
                     e.AppUserId

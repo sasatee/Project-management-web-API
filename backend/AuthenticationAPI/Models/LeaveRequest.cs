@@ -16,7 +16,7 @@ public class LeaveRequest{
     public Guid LeaveTypeId { get; set; }
     public LeaveType LeaveType { get; set; }
     
-    public Guid? AppUserId { get; set; }
+    public string? AppUserId { get; set; }
     public AppUser? AppUser { get; set; }
 
     

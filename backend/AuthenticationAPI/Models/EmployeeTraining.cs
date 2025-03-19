@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Payroll.Model
 {
@@ -6,8 +7,12 @@ namespace Payroll.Model
     {
         [Key] 
         public Guid Id { get; set; }
-        public int EmployeeId { get; set; }
+
+        [ForeignKey("Employee")]
+        public Guid EmployeeId { get; set; }
         public Employee Employee { get; set; }
+
+        [ForeignKey("Training")]
         public Guid TrainingId { get; set; }
         public Training Training { get; set; }
     }

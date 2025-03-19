@@ -97,26 +97,22 @@ namespace AuthenticationAPI.Controllers
                 return Unauthorized("User not found");
             }
 
-              if (!Guid.TryParse(currentUser.Id, out Guid parsedGuid))
-                {
-                    return BadRequest("Invalid user ID format");
-                }
+            if (!Guid.TryParse(currentUser.Id, out Guid parsedGuid))
+            {
+                return BadRequest("Invalid user ID format");
+            }
 
-
-      
             var leaveRequest = new LeaveRequest
             {
-           
                 StartDate = DateTime.UtcNow,
                 EndDate = createDto.EndDate,
                 RequestComments = createDto.RequestComments,
                 LeaveTypeId = createDto.LeaveTypeId,
                 DateRequested = DateTime.UtcNow,
-                AppUserId = parsedGuid,
+                AppUserId = currentUser.Id,
                 Approved = false,
                 Cancelled = false,
-                //
-                RequestingEmployeeId=parsedGuid,
+                RequestingEmployeeId = parsedGuid,
                 Employees = new List<Employee>()
             };
 

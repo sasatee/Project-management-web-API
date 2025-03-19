@@ -38,12 +38,12 @@ var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
 //add database 
 //sql server database
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //sql lite 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-      options.UseSqlite("Data Source = Hrdummya.db"));
+// builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//       options.UseSqlite("Data Source = Hrdummya.db"));
 
 
 
@@ -84,11 +84,16 @@ builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository>();
 builder.Services.AddScoped<ILeaveAllocationService, LeaveAllocationService>();
 
+//service 
+builder.Services.AddScoped<PayrollService>();
+
 
 //Generic repository implementation 
 builder.Services.AddScoped<IRepository<Department>, Repository<Department>>();
 builder.Services.AddScoped<IRepository<Employee>, Repository<Employee>>();
 builder.Services.AddScoped<IRepository<JobTitle>, Repository<JobTitle>>();
+builder.Services.AddScoped<IRepository<SalaryProgression>, Repository<SalaryProgression>>();
+builder.Services.AddScoped<IRepository<CategoryGroup>, Repository<CategoryGroup>>();
 
 
 
@@ -150,20 +155,21 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Run database migrations
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    try
-//    {
-//        var context = services.GetRequiredService<ApplicationDbContext>();
-//        context.Database.Migrate();
-//    }
-//    catch (Exception ex)
-//    {
-//        var logger = services.GetRequiredService<ILogger<Program>>();
-//        logger.LogError(ex, "An error occurred while migrating the database.");
-//    }
-//}
+// Seed initial data
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        await context.Database.MigrateAsync();
+        await context.SeedPayrollData();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
+}
 
 app.Run();

@@ -96,6 +96,48 @@ namespace AuthenticationAPI.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("AuthenticationAPI.Models.CategoryGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CategoryGroups");
+                });
+
+            modelBuilder.Entity("AuthenticationAPI.Models.SalaryProgression", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryGroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Increment")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Salary")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryGroupId");
+
+                    b.ToTable("SalaryProgressions");
+                });
+
             modelBuilder.Entity("LeaveAllocation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -138,10 +180,7 @@ namespace AuthenticationAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("AppUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AppUserId1")
+                    b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool?>("Approved")
@@ -174,7 +213,7 @@ namespace AuthenticationAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId1");
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("LeaveTypeId");
 
@@ -422,14 +461,23 @@ namespace AuthenticationAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<Guid?>("CategoryGroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("CurrentSalary")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("DateOfJoining")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateOfLeaving")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("DepartmentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
@@ -450,10 +498,15 @@ namespace AuthenticationAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("YearsOfService")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId")
                         .IsUnique();
+
+                    b.HasIndex("CategoryGroupId");
 
                     b.HasIndex("DepartmentId");
 
@@ -470,10 +523,7 @@ namespace AuthenticationAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("EmployeeId1")
+                    b.Property<Guid>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("TrainingId")
@@ -481,7 +531,7 @@ namespace AuthenticationAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId1");
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("TrainingId");
 
@@ -618,6 +668,17 @@ namespace AuthenticationAPI.Migrations
                     b.ToTable("Trainings");
                 });
 
+            modelBuilder.Entity("AuthenticationAPI.Models.SalaryProgression", b =>
+                {
+                    b.HasOne("AuthenticationAPI.Models.CategoryGroup", "CategoryGroup")
+                        .WithMany("SalaryProgressions")
+                        .HasForeignKey("CategoryGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CategoryGroup");
+                });
+
             modelBuilder.Entity("LeaveAllocation", b =>
                 {
                     b.HasOne("AuthenticationAPI.Models.AppUser", "AppUser")
@@ -649,7 +710,8 @@ namespace AuthenticationAPI.Migrations
                 {
                     b.HasOne("AuthenticationAPI.Models.AppUser", "AppUser")
                         .WithMany("LeaveRequests")
-                        .HasForeignKey("AppUserId1");
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LeaveType", "LeaveType")
                         .WithMany()
@@ -732,6 +794,11 @@ namespace AuthenticationAPI.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("AuthenticationAPI.Models.CategoryGroup", "CategoryGroup")
+                        .WithMany("Employees")
+                        .HasForeignKey("CategoryGroupId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Payroll.Model.Department", "Department")
                         .WithMany("Employees")
                         .HasForeignKey("DepartmentId");
@@ -742,9 +809,12 @@ namespace AuthenticationAPI.Migrations
 
                     b.HasOne("LeaveRequest", null)
                         .WithMany("Employees")
-                        .HasForeignKey("LeaveRequestId");
+                        .HasForeignKey("LeaveRequestId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("AppUser");
+
+                    b.Navigation("CategoryGroup");
 
                     b.Navigation("Department");
 
@@ -755,7 +825,7 @@ namespace AuthenticationAPI.Migrations
                 {
                     b.HasOne("Payroll.Model.Employee", "Employee")
                         .WithMany()
-                        .HasForeignKey("EmployeeId1")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -808,6 +878,13 @@ namespace AuthenticationAPI.Migrations
                     b.Navigation("LeaveAllocations");
 
                     b.Navigation("LeaveRequests");
+                });
+
+            modelBuilder.Entity("AuthenticationAPI.Models.CategoryGroup", b =>
+                {
+                    b.Navigation("Employees");
+
+                    b.Navigation("SalaryProgressions");
                 });
 
             modelBuilder.Entity("LeaveRequest", b =>

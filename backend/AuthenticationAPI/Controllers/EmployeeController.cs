@@ -124,6 +124,7 @@ namespace AuthenticationAPI.Controllers
                         employeeModel.Phone,
                         employeeModel.Address,
                         employeeModel.DateOfJoining,
+                        employeeModel.DateOfLeaving,
                         employeeModel.DepartmentId,
                         employeeModel.JobTitleId,
                         JobTitle = employeeModel.JobTitle != null ? new
