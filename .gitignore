@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/backend/AuthenticationAPI/Hrdummya.db
+/backend/AuthenticationAPI/Hrdummya.db-shm
+/backend/AuthenticationAPI/Hrdummya.db-wal

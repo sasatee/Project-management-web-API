@@ -38,12 +38,12 @@ var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
 //add database 
 //sql server database
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //sql lite 
-// builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//       options.UseSqlite("Data Source = Hrdummya.db"));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+      options.UseSqlite("Data Source = Hrdummya.db"));
 
 
 
@@ -85,15 +85,14 @@ builder.Services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository
 builder.Services.AddScoped<ILeaveAllocationService, LeaveAllocationService>();
 
 //service 
-builder.Services.AddScoped<PayrollService>();
+//builder.Services.AddScoped<PayrollService>();
 
 
 //Generic repository implementation 
 builder.Services.AddScoped<IRepository<Department>, Repository<Department>>();
 builder.Services.AddScoped<IRepository<Employee>, Repository<Employee>>();
 builder.Services.AddScoped<IRepository<JobTitle>, Repository<JobTitle>>();
-builder.Services.AddScoped<IRepository<SalaryProgression>, Repository<SalaryProgression>>();
-builder.Services.AddScoped<IRepository<CategoryGroup>, Repository<CategoryGroup>>();
+builder.Services.AddScoped<IRepository<LeaveType>, Repository<LeaveType>>();
 
 
 
