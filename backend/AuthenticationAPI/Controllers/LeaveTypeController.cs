@@ -10,11 +10,11 @@ namespace AuthenticationAPI.Controllers
     public class LeaveTypeController : ControllerBase
     {
         private readonly ILeaveTypeRepository _repository;
-        private readonly IRepository<LeaveType> _leaveRepository;  // only have update/delete operation 
+        private readonly IRepository<LeaveType> _leaveTypeRepository;  // only have update/delete operation 
         public LeaveTypeController(ILeaveTypeRepository repository,IRepository<LeaveType> leaveRepository )
         {
             _repository = repository;
-            _leaveRepository = leaveRepository;
+            _leaveTypeRepository = leaveRepository;
         }
 
         [HttpGet]
@@ -92,7 +92,7 @@ namespace AuthenticationAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var leaveType = await _leaveRepository.FindByIdAsync(id);
+            var leaveType = await _leaveTypeRepository.FindByIdAsync(id);
             if (leaveType == null)
             {
                 return NotFound(new { isSuccess = "false", Message = "Job type leave is not found" });
@@ -104,8 +104,8 @@ namespace AuthenticationAPI.Controllers
             leaveType.DateModified = updateLeaveDto.DateModified;
             leaveType.Name = updateLeaveDto.Name;
 
-            _leaveRepository.Update(leaveType);
-            await _leaveRepository.SaveChangesAsync();
+            _leaveTypeRepository.Update(leaveType);
+            await _leaveTypeRepository.SaveChangesAsync();
             return NoContent();
 
 
@@ -114,13 +114,13 @@ namespace AuthenticationAPI.Controllers
         public async Task<IActionResult> DeleteLeaveType([FromRoute] Guid id)
         {
 
-            var foundJobTypeId = _leaveRepository.FindByIdAsync(id);
+            var foundJobTypeId = _leaveTypeRepository.FindByIdAsync(id);
             if(foundJobTypeId == null)
             {
                 return NotFound(new { isSuccess = false, Message = $"Leave type not found with {id}" });
             }
-            await _leaveRepository.DeleteAsync(id);
-            await _leaveRepository.SaveChangesAsync();
+            await _leaveTypeRepository.DeleteAsync(id);
+            await _leaveTypeRepository.SaveChangesAsync();
             return Ok(new { isSuccess = true, Message = "Successfully delete leave type" });
 
 

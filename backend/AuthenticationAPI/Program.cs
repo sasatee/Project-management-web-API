@@ -85,7 +85,7 @@ builder.Services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository
 builder.Services.AddScoped<ILeaveAllocationService, LeaveAllocationService>();
 
 //service 
-//builder.Services.AddScoped<PayrollService>();
+builder.Services.AddScoped<PayrollService>();
 
 
 //Generic repository implementation 
