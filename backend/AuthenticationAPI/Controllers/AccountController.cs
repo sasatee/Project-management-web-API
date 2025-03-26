@@ -1,15 +1,15 @@
 ﻿using AuthenticationAPI.DTOs;
 using AuthenticationAPI.Models;
+using AuthenticationAPI.util;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
-using System.Text;
 
 namespace AuthenticationAPI.Controllers
 {
@@ -22,15 +22,17 @@ namespace AuthenticationAPI.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
-
+        private readonly GenerateToken _generateToken;
 
         public AccountController(
-            UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+            UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, GenerateToken generateToken)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _generateToken = generateToken;
         }
+
 
         //api/account/register
         [AllowAnonymous]
@@ -39,7 +41,6 @@ namespace AuthenticationAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-
                 return BadRequest(ModelState);
             }
             var user = new AppUser
@@ -48,7 +49,6 @@ namespace AuthenticationAPI.Controllers
                 FirstName = registerDto.FirstName,
                 LastName = registerDto.LastName,
                 UserName = registerDto.Email
-
             };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
@@ -56,14 +56,11 @@ namespace AuthenticationAPI.Controllers
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors);
-
-
             }
 
             if (registerDto.Roles is null)
             {
                 await _userManager.AddToRoleAsync(user, "User"); //set role as user 
-
             }
             else
             {
@@ -77,10 +74,8 @@ namespace AuthenticationAPI.Controllers
                 isSuccess = true,
                 Message = "Account Created Sucessfully"
             });
-
-
-
         }
+
 
 
         [AllowAnonymous]
@@ -148,6 +143,9 @@ namespace AuthenticationAPI.Controllers
                 return BadRequest(new AuthResponseDto { Message = "Email failed to send", isSuccess = false });
             }
         }
+
+
+
         //api/account/login
         [AllowAnonymous]
         [HttpPost("login")]
@@ -155,7 +153,6 @@ namespace AuthenticationAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-
                 return BadRequest(ModelState);
             }
             var user = await _userManager.FindByEmailAsync(loginDto.Email); // get email
@@ -166,13 +163,10 @@ namespace AuthenticationAPI.Controllers
                 {
                     isSuccess = false,
                     Message = "User not found with this email"
-
                 });
-
             }
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password); // verify password authenticity
             var role = await _userManager.GetRolesAsync(user);
-
 
             //if password not valid
             if (!result)
@@ -180,60 +174,18 @@ namespace AuthenticationAPI.Controllers
                 return Unauthorized(new AuthResponseDto { isSuccess = false, Message = "Invalid password" });
             }
 
-            var token = GenerateToken(user);
+            var token = _generateToken.GenerateTokenWithClaim(user);
             return Ok(new AuthResponseDto()
             {
                 Token = token,
                 Message = "Sucessfully Login.",
                 isSuccess = true,
                 Roles = role.ToList() // include roles in the response 
-
-
-
             });
         }
-        private string GenerateToken(AppUser user)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var key = Encoding.ASCII
-                .GetBytes(_configuration.GetSection("JWTSetting").GetSection("securityKey").Value!); // private secret key
-
-            var roles = _userManager.GetRolesAsync(user).Result;
-
-            List<Claim> claims = new List<Claim>
-            {
-                 new (JwtRegisteredClaimNames.Email,user.Email ?? ""),
-                new(JwtRegisteredClaimNames.Name,user.FirstName ?? ""),
-                new(JwtRegisteredClaimNames.Name,user.LastName ?? ""),
-                new(JwtRegisteredClaimNames.NameId,user.Id ?? ""),
-                new(JwtRegisteredClaimNames.Aud,_configuration.GetSection("JWTSetting").GetSection("ValidAudience").Value!),
-                new(JwtRegisteredClaimNames.Iss,_configuration.GetSection("JWTSetting").GetSection("ValidIssuer").Value!)
-
-            };
-
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(1),  
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256
 
 
 
-                    )
-
-
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
         //api/account/detail
         [HttpGet("detail")]
         public async Task<ActionResult<UserDetailDto>> GetUserDetail()
@@ -247,7 +199,6 @@ namespace AuthenticationAPI.Controllers
                     isSuccess = false,
                     Message = "User not found"
                 });
-
             }
             return Ok(new UserDetailDto
             {
@@ -259,11 +210,10 @@ namespace AuthenticationAPI.Controllers
                 PhoneNumber = user.PhoneNumber,
                 PhoneNumberConfirmed = user.PhoneNumberConfirmed,
                 AccessFailedCount = user.AccessFailedCount,
-
             });
-
-
         }
+
+
 
         [Authorize]
         [HttpPost("change-password")]
@@ -278,8 +228,6 @@ namespace AuthenticationAPI.Controllers
                     isSuccess = false,
                     Message = $"User does not exist this email: {changePasswordDto.Email}"
                 });
-
-
             }
             var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.CurrentPassword, changePasswordDto.ConfirmNewPassword);
 
@@ -292,6 +240,7 @@ namespace AuthenticationAPI.Controllers
                 return BadRequest(new AuthResponseDto { isSuccess = false, Message = "Password has not been changed" });
             }
         }
+
 
 
         [AllowAnonymous]
@@ -315,6 +264,9 @@ namespace AuthenticationAPI.Controllers
 
             return BadRequest(new AuthResponseDto { isSuccess = false, Message = result.Errors.FirstOrDefault()!.Description });
         }
+
+
+
         /// <summary>
         /// Retrieves a list of all users with their details.
         /// </summary>
@@ -327,9 +279,7 @@ namespace AuthenticationAPI.Controllers
         [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<IEnumerable<UserDetailDto>>> GetAllUsers()
         {
-
             //check if user is in the Admin role
-
             var isAdmin = User.IsInRole("Admin");
 
             if (!isAdmin)
@@ -342,7 +292,6 @@ namespace AuthenticationAPI.Controllers
                 Email = u.Email,
                 FirstName = u.FirstName,
                 LastName = u.LastName
-
             }).ToListAsync();
 
             //fetch roles for each user after receiving the users 
@@ -350,9 +299,6 @@ namespace AuthenticationAPI.Controllers
             {
                 var appUser = await _userManager.FindByIdAsync(user.Id!);
                 user.Roles = (await _userManager.GetRolesAsync(appUser!)).ToArray();
-
-
-
             }
 
             return Ok(new
@@ -362,6 +308,88 @@ namespace AuthenticationAPI.Controllers
             });
         }
 
+
+
+        //api/account/google-login
+        [AllowAnonymous]
+        [HttpGet("google-login")]
+        public IActionResult GoogleLogin()
+        {
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action(nameof(GoogleResponse))
+            };
+
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+
+
+        //api/account/google-response
+        [AllowAnonymous]
+        [HttpGet("google-response")]
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var authResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+            if (!authResult.Succeeded)
+            {
+                return BadRequest(new AuthResponseDto { isSuccess = false, Message = "Google authentication failed" });
+            }
+
+            var claims = authResult.Principal.Claims.ToList();
+            var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var firstName = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value;
+            var lastName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value;
+            var picture = claims.FirstOrDefault(c => c.Type == "picture")?.Value;
+            var googleId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest(new AuthResponseDto { isSuccess = false, Message = "Email not found in Google response" });
+            }
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                user = new AppUser
+                {
+                    Email = email,
+                    UserName = email,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    GoogleId = googleId,
+                    GooglePicture = picture,
+                    EmailConfirmed = true
+                };
+
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    return BadRequest(new AuthResponseDto { isSuccess = false, Message = "Failed to create user account" });
+                }
+
+                //  default role "User" and "EMPLOYEE" 
+                await _userManager.AddToRoleAsync(user, "ADMIN");
+                await _userManager.AddToRoleAsync(user, "EMPLOYEE");
+            }
+            else
+            {
+                user.GoogleId = googleId;
+                user.GooglePicture = picture;
+                await _userManager.UpdateAsync(user);
+            }
+
+            var token = _generateToken.GenerateTokenWithClaim(user);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return Ok(new AuthResponseDto
+            {
+                Token = token,
+                Message = "Successfully logged in with Google",
+                isSuccess = true,
+                Roles = roles.ToList()
+            });
+        }
     }
 
 

@@ -4,12 +4,15 @@ using AuthenticationAPI.Models;
 using AuthenticationAPI.Repository;
 using AuthenticationAPI.Repository.IRepository;
 using AuthenticationAPI.Service;
+using AuthenticationAPI.util;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Payroll.Model;
+using Scalar.AspNetCore;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,25 +30,18 @@ builder.Services.AddCors(options =>
     });
 });
 
-
-
-
 var JWTSetting = builder.Configuration.GetSection("JWTSetting");
-
-
 
 // Add services to the container.
 
 //add database 
 //sql server database
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //sql lite 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-      options.UseSqlite("Data Source = Hrdummya.db"));
-
-
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//      options.UseSqlite("Data Source = Hrdummya.db"));
 
 //add identity role in DI container
 builder.Services.AddIdentity<AppUser, IdentityRole>()
@@ -53,31 +49,33 @@ builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 // Add authentication in DI container
-builder.Services.AddAuthentication(option =>
+builder.Services.AddAuthentication(options =>
 {
-    option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(option =>
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
 {
-    option.SaveToken = true;
-    option.RequireHttpsMetadata = false;
-    option.TokenValidationParameters = new TokenValidationParameters
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidAudience = JWTSetting["ValidAudience"],
-        ValidIssuer = JWTSetting["ValidIssuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTSetting.GetSection("securityKey").Value!))
+        ValidAudience = builder.Configuration["JWTSetting:ValidAudience"],
+        ValidIssuer = builder.Configuration["JWTSetting:ValidIssuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTSetting:securityKey"]!))
     };
+}).AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
 });
 
 //Iconfiguration as singleton dp 
 //builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
-// Add your services and repository  implementation
+// Add services and repository  implementation
 builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
@@ -86,7 +84,7 @@ builder.Services.AddScoped<ILeaveAllocationService, LeaveAllocationService>();
 
 //service 
 builder.Services.AddScoped<PayrollService>();
-
+builder.Services.AddTransient<GenerateToken, TokenGenerator>();
 
 //Generic repository implementation 
 builder.Services.AddScoped<IRepository<Department>, Repository<Department>>();
@@ -96,8 +94,7 @@ builder.Services.AddScoped<IRepository<LeaveType>, Repository<LeaveType>>();
 builder.Services.AddScoped<IRepository<SalaryProgression>, Repository<SalaryProgression>>();
 builder.Services.AddScoped<IRepository<CategoryGroup>, Repository<CategoryGroup>>();
 
-
-
+builder.Services.AddOpenApi();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -139,17 +136,30 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    
+    app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options
+         .WithDarkMode(true)
+        .WithDefaultHttpClient(ScalarTarget.Node, ScalarClient.HttpClient)
+        .WithDarkModeToggle(true)
+        .WithPreferredScheme("Bearer")
+        .WithHttpBearerAuthentication(bearer =>
+        {
+            bearer.Token = "Bearer [token]";
+        });
+        options.Authentication = new ScalarAuthenticationOptions
+        {
+            PreferredSecurityScheme = "Bearer"
+        };
+    });
     // Remove HTTPS redirection in development
-  //  app.UseHttpsRedirection();
+    //  app.UseHttpsRedirection();
 }
 
 // Use CORS before other middleware
 app.UseCors("AllowAll"); // Changed from "AllowFrontend" to match the policy name
 //app.UseCors("AllowFrontend");
-
-
-
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -164,7 +174,7 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
         await context.Database.MigrateAsync();
-        await context.SeedPayrollData();
+       // await context.SeedPayrollData();
     }
     catch (Exception ex)
     {
