@@ -47,6 +47,12 @@ namespace AuthenticationAPI.Migrations
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("GoogleId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GooglePicture")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
@@ -673,7 +679,7 @@ namespace AuthenticationAPI.Migrations
                     b.HasOne("AuthenticationAPI.Models.CategoryGroup", "CategoryGroup")
                         .WithMany("SalaryProgressions")
                         .HasForeignKey("CategoryGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CategoryGroup");
