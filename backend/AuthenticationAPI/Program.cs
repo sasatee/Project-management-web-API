@@ -36,12 +36,12 @@ var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
 //add database 
 //sql server database
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //sql lite 
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//      options.UseSqlite("Data Source = Hrdummya.db"));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+      options.UseSqlite("Data Source = Hrdummy.db"));
 
 //add identity role in DI container
 builder.Services.AddIdentity<AppUser, IdentityRole>()
@@ -84,6 +84,7 @@ builder.Services.AddScoped<ILeaveAllocationService, LeaveAllocationService>();
 
 //service 
 builder.Services.AddScoped<PayrollService>();
+builder.Services.AddScoped<SeedSalaryForCategory>();
 builder.Services.AddTransient<GenerateToken, TokenGenerator>();
 
 //Generic repository implementation 
@@ -93,6 +94,7 @@ builder.Services.AddScoped<IRepository<JobTitle>, Repository<JobTitle>>();
 builder.Services.AddScoped<IRepository<LeaveType>, Repository<LeaveType>>();
 builder.Services.AddScoped<IRepository<SalaryProgression>, Repository<SalaryProgression>>();
 builder.Services.AddScoped<IRepository<CategoryGroup>, Repository<CategoryGroup>>();
+builder.Services.AddScoped<IRepository<SalaryStep>, Repository<SalaryStep>>();
 
 builder.Services.AddOpenApi();
 
@@ -174,7 +176,7 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
         await context.Database.MigrateAsync();
-       // await context.SeedPayrollData();
+      
     }
     catch (Exception ex)
     {

@@ -27,82 +27,10 @@ namespace AuthenticationAPI.Data
         
         public DbSet<SalaryProgression> SalaryProgressions { get; set; }
         public DbSet<CategoryGroup> CategoryGroups { get; set; }
+        public DbSet<SalaryStep> SalarySteps { get; set; }
         
 
-        public async Task SeedPayrollData()
-        {
-            if (!CategoryGroups.Any())
-            {
-                var categoryGroups = new List<CategoryGroup>
-                {
-                    new CategoryGroup { Id = Guid.NewGuid(), Name = "Junior Developer" },
-                    new CategoryGroup { Id = Guid.NewGuid(), Name = "Senior Developer" },
-                    new CategoryGroup { Id = Guid.NewGuid(), Name = "Team Lead" },
-                    new CategoryGroup { Id = Guid.NewGuid(), Name = "Project Manager" }
-                };
-
-                await CategoryGroups.AddRangeAsync(categoryGroups);
-                await SaveChangesAsync();
-
-                // Seed salary progressions for each category
-                var salaryProgressions = new List<SalaryProgression>();
-
-                // Junior Developer progression
-                for (int year = 1; year <= 5; year++)
-                {
-                    salaryProgressions.Add(new SalaryProgression
-                    {
-                        Id = Guid.NewGuid(),
-                        Year = year,
-                        Salary = 35000 + (year - 1) * 2500,
-                        Increment = 2500,
-                        CategoryGroupId = categoryGroups[0].Id
-                    });
-                }
-
-                // Senior Developer progression
-                for (int year = 1; year <= 5; year++)
-                {
-                    salaryProgressions.Add(new SalaryProgression
-                    {
-                        Id = Guid.NewGuid(),
-                        Year = year,
-                        Salary = 55000 + (year - 1) * 3500,
-                        Increment = 3500,
-                        CategoryGroupId = categoryGroups[1].Id
-                    });
-                }
-
-                // Team Lead progression
-                for (int year = 1; year <= 5; year++)
-                {
-                    salaryProgressions.Add(new SalaryProgression
-                    {
-                        Id = Guid.NewGuid(),
-                        Year = year,
-                        Salary = 75000 + (year - 1) * 5000,
-                        Increment = 5000,
-                        CategoryGroupId = categoryGroups[2].Id
-                    });
-                }
-
-                // Project Manager progression
-                for (int year = 1; year <= 5; year++)
-                {
-                    salaryProgressions.Add(new SalaryProgression
-                    {
-                        Id = Guid.NewGuid(),
-                        Year = year,
-                        Salary = 90000 + (year - 1) * 7500,
-                        Increment = 7500,
-                        CategoryGroupId = categoryGroups[3].Id
-                    });
-                }
-
-                await SalaryProgressions.AddRangeAsync(salaryProgressions);
-                await SaveChangesAsync();
-            }
-        }
+       
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -115,6 +43,18 @@ namespace AuthenticationAPI.Data
 
             modelBuilder.Entity<SalaryProgression>()
                 .Property(s => s.Increment)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<SalaryStep>()
+                .Property(s => s.FromAmount)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<SalaryStep>()
+                .Property(s => s.Increment)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<SalaryStep>()
+                .Property(s => s.ToAmount)
                 .HasPrecision(18, 2);
 
             modelBuilder.Entity<Employee>()
@@ -205,6 +145,11 @@ namespace AuthenticationAPI.Data
                 .HasForeignKey(s => s.CategoryGroupId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<SalaryStep>()
+                .HasOne(s => s.CategoryGroup)
+                .WithMany(c => c.SalarySteps)
+                .HasForeignKey(s => s.CategoryGroupId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
