@@ -25,16 +25,7 @@ namespace AuthenticationAPI.Controllers
             return Ok(new { result = salary });
         }
         
-        [HttpPost("seed-salary-steps")]
-        public async Task<IActionResult> SeedSalarySteps([FromBody] SeedSalaryStepsRequest request)
-        {
-            await _payrollService.SeedSalaryStepsForCategory(
-                request.CategoryGroupId,
-                request.CategoryName,
-                request.Steps);
-                
-            return Ok(new { success = true, message = $"{request.CategoryName} salary steps seeded successfully" });
-        }
+      
     }
     
     public class SeedSalaryStepsRequest

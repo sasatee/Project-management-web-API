@@ -102,5 +102,10 @@ namespace AuthenticationAPI.Service
         {
             await _salaryStepSeeder.SeedUTM2SalarySteps();
         }
+        
+        public async Task SeedUTM3SalarySteps()
+        {
+            await _salaryStepSeeder.SeedUTM3SalarySteps();
+        }
     }
 }
