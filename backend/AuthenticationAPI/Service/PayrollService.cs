@@ -60,6 +60,7 @@ namespace AuthenticationAPI.Service
             {
                 foundEmployee.CurrentSalary = currentSalary;
                 _employeeRepository.Update(foundEmployee);
+                await _employeeRepository.SaveChangesAsync();
             }
 
 
