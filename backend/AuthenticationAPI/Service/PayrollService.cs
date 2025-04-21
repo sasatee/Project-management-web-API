@@ -28,10 +28,11 @@ namespace AuthenticationAPI.Service
         }
 
 
-        public async Task<decimal> CalculateDynamicSalary(int yearsOfService, Guid categoryGroupId,Guid employeeId)
+        public async Task<decimal> CalculateDynamicSalary(Guid categoryGroupId,Guid employeeId,int? yearOFService = null)
         {
             var allSteps = await _salaryStepRepo.GetAll(s => s.CategoryGroupId == categoryGroupId);
             var foundEmployee = await _employeeRepository.FindByIdAsync(employeeId);
+            var yearsOfService = yearOFService ?? foundEmployee.YearsOfService; 
 
             var orderedSteps = allSteps.OrderBy(s => s.FromAmount).ToList();
 

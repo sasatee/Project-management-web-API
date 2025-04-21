@@ -128,7 +128,7 @@ namespace AuthenticationAPI.Controllers
                         employeeModel.DepartmentId,
                         employeeModel.JobTitleId,
                         JobTitle = employeeModel.JobTitle != null ? new
-                        {
+                        {   
                             employeeModel.JobTitle.Id,
                             employeeModel.JobTitle.Title,
                             employeeModel.JobTitle.BaseSalary,

@@ -19,10 +19,9 @@ namespace AuthenticationAPI.Controllers
 
 
         [HttpGet("{employeeId}")]
-        //oute("{employeeId}")]
-        public async Task<IActionResult> CalculateDynamicSalary([FromQuery] int yearsOfService, [FromQuery] Guid categoryId, [FromRoute] Guid employeeId)
+        public async Task<IActionResult> CalculateSalaryPayroll( [FromQuery] Guid categoryId, [FromRoute] Guid employeeId, [FromQuery] int? YearOfService)
         {
-            var salary = await _payrollService.CalculateDynamicSalary(yearsOfService, categoryId, employeeId);
+            var salary = await _payrollService.CalculateDynamicSalary(categoryId, employeeId, YearOfService);
             return Ok(new { result = salary });
         }
         
