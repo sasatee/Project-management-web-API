@@ -7,6 +7,8 @@ namespace AuthenticationAPI.DTOs
 
 
         [Required]
+        public Guid EmployeeId { get;set;}
+        [Required]
         public Guid JobTitleId { get;  set; }
         [Required]
         public Guid DepartmentId { get;  set; }
@@ -17,5 +19,7 @@ namespace AuthenticationAPI.DTOs
         public string Email { get;  set; }
         public string LastName { get;  set; }
         public string FirstName { get;  set; }
+
+        public Guid CategoryGroupId { get; set; }
     }
 }

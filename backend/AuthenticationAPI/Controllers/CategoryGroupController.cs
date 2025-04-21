@@ -1,5 +1,7 @@
-﻿using AuthenticationAPI.Models;
+﻿using AuthenticationAPI.DTOs;
+using AuthenticationAPI.Models;
 using AuthenticationAPI.Repository.IRepository;
+using AuthenticationAPI.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthenticationAPI.Controllers
@@ -9,9 +11,11 @@ namespace AuthenticationAPI.Controllers
     public class CategoryGroupController : Controller
     {
         private readonly IRepository<CategoryGroup> _categoryGroupRepository;
-        public CategoryGroupController(IRepository<CategoryGroup> categoryGroupRepository)
+        private readonly SeedSalaryForCategory _createCategorySeedService;
+        public CategoryGroupController(IRepository<CategoryGroup> categoryGroupRepository,SeedSalaryForCategory createCategorySeedService)
         {
             _categoryGroupRepository = categoryGroupRepository;
+            _createCategorySeedService = createCategorySeedService;
         }
 
         [HttpGet("{id}")]
@@ -51,8 +55,20 @@ namespace AuthenticationAPI.Controllers
             return Ok(response);
         }
 
+        [HttpPost]
+        public  async Task<IActionResult> CreateCategoryGroupAsync([FromBody] CreateCategoryGroupDto categoryDto)
+        {
+
+
+            await _createCategorySeedService.GetOrCreateCategoryGroup(categoryDto.Name);
+            
+            return NoContent();
+
+
+        }
+
+
     
 
    }
-
 }

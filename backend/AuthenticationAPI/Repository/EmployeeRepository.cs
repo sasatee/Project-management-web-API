@@ -75,7 +75,7 @@ namespace AuthenticationAPI.Repository
             var employee = await _context.Users.FindAsync(employeeGuid);
             return employee != null;
         }
-
+        
         public async Task<IResult> CreateEmployee(string employeeGuid, EmployeeDto empDto)
         {
             // Check if user already exists
@@ -98,6 +98,14 @@ namespace AuthenticationAPI.Repository
                 if (jobTitle == null)
                 {
                     return Results.BadRequest(new { isSuccess = false, message = "Invalid Job Title ID" });
+                }
+
+                //Verifythat Category Group exists 
+
+                var categoryGroup = await _context.CategoryGroups.FindAsync(empDto.CategoryGroupId);
+                if (categoryGroup == null)
+                {
+                    return Results.BadRequest(new { isSuccess = false, message = "Invalid Category group ID" });
                 }
 
                 // Create AppUser first
@@ -136,7 +144,10 @@ namespace AuthenticationAPI.Repository
                     AppUserId = appUser.Id,
                     DateOfJoining = DateTime.UtcNow,
                      DateOfLeaving = DateTime.UtcNow,
+                     CategoryGroupId = empDto.CategoryGroupId
                 };
+
+             
 
                 await _context.Employees.AddAsync(employee);
                 await _context.SaveChangesAsync();

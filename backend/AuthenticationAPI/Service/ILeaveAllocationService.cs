@@ -1,5 +1,5 @@
 ﻿
-using AuthenticationAPI.Service;
+using AuthenticationAPI.DTOs;
 
 public interface ILeaveAllocationService
     {

@@ -19,7 +19,7 @@ namespace AuthenticationAPI.Controllers
 
         public class CreateDepartmentDto
         {
-            //public Guid Id { get; set; }
+            
             [Required]
             public string DepartmentName { get; set; }
             public string HeadOfDepartment { get; set; }
@@ -27,7 +27,7 @@ namespace AuthenticationAPI.Controllers
 
         public class UpdateCreateDepartmentDto
         {
-            //public Guid Id { get; set; }
+            
             [Required]
             public string DepartmentName { get; set; }
             public string HeadOfDepartment { get; set; }

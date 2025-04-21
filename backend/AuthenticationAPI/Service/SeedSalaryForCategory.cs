@@ -1,3 +1,4 @@
+using AuthenticationAPI.DTOs;
 using AuthenticationAPI.Models;
 using AuthenticationAPI.Repository.IRepository;
 
@@ -116,23 +117,23 @@ namespace AuthenticationAPI.Service
             await _salaryStepRepo.SaveChangesAsync();
         }
         
-        public async Task<CategoryGroup> GetOrCreateCategoryGroup(string name)
+ 
+        public async Task<CategoryGroup> GetOrCreateCategoryGroup (string name)
         {
-            var categoryGroups = await _categoryGroupRepo.GetAll();
-            var categoryGroup = categoryGroups.FirstOrDefault(cg => cg.Name == name);
-            
-            if (categoryGroup == null)
-            {
+            var categoryGroups= await _categoryGroupRepo.GetAll();
+            var categoryGroup = categoryGroups.FirstOrDefault(x => x.Name == name);
+
+            if(categoryGroup == null) {
                 categoryGroup = new CategoryGroup
                 {
                     Id = Guid.NewGuid(),
                     Name = name
                 };
-                
+
                 await _categoryGroupRepo.AddAsync(categoryGroup);
                 await _categoryGroupRepo.SaveChangesAsync();
+
             }
-            
             return categoryGroup;
         }
     }

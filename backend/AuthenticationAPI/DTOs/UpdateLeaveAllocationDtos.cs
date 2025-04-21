@@ -1,8 +1,8 @@
-﻿namespace AuthenticationAPI.Service
+﻿namespace AuthenticationAPI.DTOs
 {
     public class UpdateLeaveAllocationDtos
     {
     }
 
-   
+
 }

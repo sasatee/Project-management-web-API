@@ -1,5 +1,7 @@
-﻿using AuthenticationAPI.Models;
+﻿using AuthenticationAPI.DTOs;
+using AuthenticationAPI.Models;
 using AuthenticationAPI.Repository.IRepository;
+using Payroll.Model;
 
 namespace AuthenticationAPI.Service
 {
@@ -8,42 +10,29 @@ namespace AuthenticationAPI.Service
         private readonly IRepository<SalaryProgression> _salaryProgressionRepo;
         private readonly IRepository<CategoryGroup> _categoryGroupRepo;
         private readonly IRepository<SalaryStep> _salaryStepRepo;
+        private readonly IRepository<Employee> _employeeRepository;
         private readonly SeedSalaryForCategory _salaryStepSeeder;
 
         public PayrollService(
             IRepository<SalaryProgression> salaryRepo, 
+            IRepository<Employee> employeeRepo,
             IRepository<CategoryGroup> categoryRepo,
             IRepository<SalaryStep> salaryStepRepo,
             SeedSalaryForCategory salaryStepSeeder)
         {
+            _employeeRepository = employeeRepo;
             _salaryProgressionRepo = salaryRepo;
             _categoryGroupRepo = categoryRepo;
             _salaryStepRepo = salaryStepRepo;
             _salaryStepSeeder = salaryStepSeeder;
         }
 
-        public async Task<decimal> CalculateSalary(int yearOfService, Guid categoryGroupId)
-        {
-            var salaryprogression = await _salaryProgressionRepo.GetAll();
-            var progressionForGroup = salaryprogression.Where(p => p.CategoryGroupId == categoryGroupId)
-                .OrderBy(p => p.Year)
-                .ToList();
 
-            if(yearOfService <= progressionForGroup.Count)
-            {
-                var progression = progressionForGroup.FirstOrDefault(p => p.Year == yearOfService);
-                return progression?.Salary ?? 0;
-            }
-            else
-            {
-                var maxSalary = progressionForGroup.LastOrDefault()?.Salary ?? 0;
-                return maxSalary;
-            }
-        }
-
-        public async Task<decimal> CalculateDynamicSalary(int yearsOfService, Guid categoryGroupId)
+        public async Task<decimal> CalculateDynamicSalary(int yearsOfService, Guid categoryGroupId,Guid employeeId)
         {
             var allSteps = await _salaryStepRepo.GetAll(s => s.CategoryGroupId == categoryGroupId);
+            var foundEmployee = await _employeeRepository.FindByIdAsync(employeeId);
+
             var orderedSteps = allSteps.OrderBy(s => s.FromAmount).ToList();
 
             if (!orderedSteps.Any())
@@ -65,9 +54,17 @@ namespace AuthenticationAPI.Service
                     break;
 
                 currentSalary = step.ToAmount;
+
+            }
+            if (foundEmployee != null)
+            {
+                foundEmployee.CurrentSalary = currentSalary;
+                _employeeRepository.Update(foundEmployee);
             }
 
+
             return currentSalary;
+
         }
         
         public async Task SeedSalaryStepsForCategory(Guid categoryGroupId, string categoryName, List<SalaryStep> steps)
@@ -107,5 +104,7 @@ namespace AuthenticationAPI.Service
         {
             await _salaryStepSeeder.SeedUTM3SalarySteps();
         }
+
+      
     }
 }

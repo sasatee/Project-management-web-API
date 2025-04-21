@@ -1,4 +1,5 @@
 ﻿using AuthenticationAPI.Data;
+using AuthenticationAPI.DTOs;
 using AuthenticationAPI.IRepository.IRepository;
 using AuthenticationAPI.Repository.IRepository;
 

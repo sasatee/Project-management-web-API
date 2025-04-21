@@ -13,6 +13,8 @@ namespace AuthenticationAPI.Repository.IRepository
         Task DeleteAsync(Guid id);
         Task<int> SaveChangesAsync();
 
+        
+
         /// <summary>
         /// 
         /// </summary>
