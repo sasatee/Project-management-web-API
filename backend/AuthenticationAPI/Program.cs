@@ -95,6 +95,7 @@ builder.Services.AddScoped<IRepository<LeaveType>, Repository<LeaveType>>();
 builder.Services.AddScoped<IRepository<SalaryProgression>, Repository<SalaryProgression>>();
 builder.Services.AddScoped<IRepository<CategoryGroup>, Repository<CategoryGroup>>();
 builder.Services.AddScoped<IRepository<SalaryStep>, Repository<SalaryStep>>();
+builder.Services.AddScoped<IRepository<Payrolls>, Repository<Payrolls>>();
 
 builder.Services.AddOpenApi();
 
@@ -168,7 +169,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Seed initial data
+// synchronize database with latest migration
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

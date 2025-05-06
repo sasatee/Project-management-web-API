@@ -5,6 +5,8 @@ using Payroll.Model;
 
 namespace AuthenticationAPI.Service
 {
+
+
     public class PayrollService
     {
         private readonly IRepository<SalaryProgression> _salaryProgressionRepo;
@@ -28,7 +30,7 @@ namespace AuthenticationAPI.Service
         }
 
 
-        public async Task<decimal> CalculateDynamicSalary(Guid categoryGroupId,Guid employeeId,int? yearOFService = null)
+        public async Task<decimal> CalculateSalaryAsPerScale(Guid categoryGroupId,Guid employeeId,int? yearOFService = null)
         {
             var allSteps = await _salaryStepRepo.GetAll(s => s.CategoryGroupId == categoryGroupId);
             var foundEmployee = await _employeeRepository.FindByIdAsync(employeeId);
@@ -61,6 +63,9 @@ namespace AuthenticationAPI.Service
             {
                 foundEmployee.CurrentSalary = currentSalary;
                 _employeeRepository.Update(foundEmployee);
+               
+
+
                 await _employeeRepository.SaveChangesAsync();
             }
 
