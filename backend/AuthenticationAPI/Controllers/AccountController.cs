@@ -245,7 +245,7 @@ namespace AuthenticationAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("reset-password")]
-        public async Task<ActionResult> ResetPassword(ResetPassowrdDto resetpasswordDto)
+        public async Task<ActionResult> ResetPassword(ResetPasswordDto resetpasswordDto)
         {
             var user = await _userManager.FindByEmailAsync(resetpasswordDto.Email);
             resetpasswordDto.Token = WebUtility.UrlDecode(resetpasswordDto.Token);

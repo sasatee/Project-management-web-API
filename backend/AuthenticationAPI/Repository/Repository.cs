@@ -53,7 +53,7 @@ namespace AuthenticationAPI.Repository
         {
             
             return await _dbContext.SaveChangesAsync();
-            await _dbContext.SaveChangesAsync();
+           
         }
 
         public void Update(T entity)

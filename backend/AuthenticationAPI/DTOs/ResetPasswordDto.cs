@@ -2,7 +2,7 @@
 
 namespace AuthenticationAPI.DTOs
 {
-    public class ResetPassowrdDto
+    public class ResetPasswordDto
     {
 
         [Required]

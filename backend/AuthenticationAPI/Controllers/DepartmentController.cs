@@ -46,7 +46,7 @@ namespace AuthenticationAPI.Controllers
             };
             await _departmentRepository.AddAsync(department);
             await _departmentRepository.SaveChangesAsync();
-            return Ok(new { AuthResponse = new AuthResponseDto { isSuccess = true, Message = "Successfully created department" }, Result = departmentDto });
+            return Ok(new { AuthResponse = new  { isSuccess = true, Message = "Successfully created department" }, Result = departmentDto });
         }
 
         [HttpPut("{id}")]
