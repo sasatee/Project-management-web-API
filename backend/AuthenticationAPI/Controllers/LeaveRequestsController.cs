@@ -136,13 +136,13 @@ namespace AuthenticationAPI.Controllers
 
 
         [HttpPut("{id}/approve")]
-        [Authorize(Roles = "ADMIN")]
+      //  [Authorize(Roles = "ADMIN")]
         public  async Task<IActionResult> ApproveLeaveRequest(Guid id, [FromBody] bool approved)
         {
            if(!await _leaveRequestrepository.Exists(id)) return NotFound();
 
             await _leaveRequestrepository.ChangeApprovalStatus(id, approved);
-            return NoContent();
+            return Ok(new {isSuccess = true, Message = $"Leave has been approved with approve id {id}"});
         }
 
 
