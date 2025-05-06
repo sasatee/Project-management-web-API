@@ -3,6 +3,7 @@ using AuthenticationAPI.Models;
 using AuthenticationAPI.Repository.IRepository;
 using AuthenticationAPI.Service;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace AuthenticationAPI.Controllers
 {
@@ -12,10 +13,17 @@ namespace AuthenticationAPI.Controllers
     {
         private readonly IRepository<CategoryGroup> _categoryGroupRepository;
         private readonly SeedSalaryForCategory _createCategorySeedService;
-        public CategoryGroupController(IRepository<CategoryGroup> categoryGroupRepository,SeedSalaryForCategory createCategorySeedService)
+        public CategoryGroupController(IRepository<CategoryGroup> categoryGroupRepository, SeedSalaryForCategory createCategorySeedService)
         {
             _categoryGroupRepository = categoryGroupRepository;
             _createCategorySeedService = createCategorySeedService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCategoryGroup()
+        {
+            var categoryGroup = await _categoryGroupRepository.GetAll();
+            return Ok(categoryGroup);
         }
 
         [HttpGet("{id}")]
@@ -27,7 +35,7 @@ namespace AuthenticationAPI.Controllers
             );
 
             if (category == null)
-            {   
+            {
                 return NotFound(new { message = "category group not found" });
             }
 
@@ -56,19 +64,41 @@ namespace AuthenticationAPI.Controllers
         }
 
         [HttpPost]
-        public  async Task<IActionResult> CreateCategoryGroupAsync([FromBody] CreateCategoryGroupDto categoryDto)
+        public async Task<IActionResult> CreateCategoryGroupAsync([FromBody] CreateCategoryGroupDto categoryDto)
         {
 
 
-            await _createCategorySeedService.GetOrCreateCategoryGroup(categoryDto.Name);
-            
+            await _createCategorySeedService.CreateCategoryGroup(categoryDto.Name);
+
             return NoContent();
 
 
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryGroupDto updateDto, [FromRoute] Guid id)
+        {
+           var categoryGroup =  await _categoryGroupRepository.FindByIdAsync(id);
 
-    
+            if(categoryGroup is null)
+            {
+                return NotFound(new { isSuccess = false, message = "Category group is not found" });
 
-   }
+            }
+            categoryGroup.Name = updateDto.Name;
+            _categoryGroupRepository.Update(categoryGroup);
+            await _categoryGroupRepository.SaveChangesAsync();
+            return NoContent();
+
+
+
+        }
+
+
+
+
+
+
+
+    }
 }

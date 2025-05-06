@@ -6,14 +6,14 @@ using AuthenticationAPI.Repository.IRepository;
 namespace AuthenticationAPI.Service
 {
 
-    public class LeaveAllocationService : ILeaveAllocationService
+    public class CreateLeaveAllocationService : ICreateLeaveAllocationService
         {
             private readonly ILeaveAllocationRepository _leaveAllocationRepository;
             private readonly ILeaveTypeRepository _leaveTypeRepository;
             private readonly IEmployeeRepository   _employeeRepository;
              private readonly ApplicationDbContext _context;
 
-            public LeaveAllocationService(ILeaveAllocationRepository leaveAllocationRepository,ILeaveTypeRepository leaveTypeRepositiory,IEmployeeRepository employeeRepository, ApplicationDbContext context)
+            public CreateLeaveAllocationService(ILeaveAllocationRepository leaveAllocationRepository,ILeaveTypeRepository leaveTypeRepositiory,IEmployeeRepository employeeRepository, ApplicationDbContext context)
             {
                 _leaveAllocationRepository = leaveAllocationRepository;
                 _leaveTypeRepository = leaveTypeRepositiory;
@@ -21,7 +21,7 @@ namespace AuthenticationAPI.Service
                 _context = context;
             }
 
-         public async Task<CreateLeaveAllocationDto> CreateLeaveAllocationsForYear(Guid leaveTypeId, int period, Guid appuserId, Guid employeeId)
+            public async Task<CreateLeaveAllocationDto> CreateLeaveAllocationsForYear(Guid leaveTypeId, int period, Guid appuserId, Guid employeeId)
         {
             try 
             {
@@ -95,20 +95,7 @@ namespace AuthenticationAPI.Service
         }
 
 
-            public Task<LeaveAllocationDto> GetEmployeeAllocation(int employeeId)
-            {
-                throw new NotImplementedException();
-            }
 
-            public Task<List<LeaveAllocationDto>> GetEmployeeAllocations(string employeeId)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task<bool> UpdateEmployeeAllocation(UpdateLeaveAllocationDtos UpdateDtos)
-            {
-                throw new NotImplementedException();
-            }
         }
    
 

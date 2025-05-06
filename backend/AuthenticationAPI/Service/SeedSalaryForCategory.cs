@@ -20,7 +20,7 @@ namespace AuthenticationAPI.Service
         public async Task SeedUTM1SalarySteps()
         {
            
-            var categoryGroup = await GetOrCreateCategoryGroup("UTM 1");
+            var categoryGroup = await CreateCategoryGroup("UTM 1");
             
           
             var existingSteps = await _salaryStepRepo.GetAll(s => s.CategoryGroupId == categoryGroup.Id);
@@ -55,7 +55,7 @@ namespace AuthenticationAPI.Service
         public async Task SeedUTM2SalarySteps()
         {
          
-            var categoryGroup = await GetOrCreateCategoryGroup("UTM 2");
+            var categoryGroup = await CreateCategoryGroup("UTM 2");
             
           
             var existingSteps = await _salaryStepRepo.GetAll(s => s.CategoryGroupId == categoryGroup.Id);
@@ -87,7 +87,7 @@ namespace AuthenticationAPI.Service
         public async Task SeedUTM3SalarySteps()
         {
             // Create or get category group
-            var categoryGroup = await GetOrCreateCategoryGroup("UTM 3");
+            var categoryGroup = await CreateCategoryGroup("UTM 3");
             
             // Check if steps already exist
             var existingSteps = await _salaryStepRepo.GetAll(s => s.CategoryGroupId == categoryGroup.Id);
@@ -118,7 +118,7 @@ namespace AuthenticationAPI.Service
         }
         
  
-        public async Task<CategoryGroup> GetOrCreateCategoryGroup (string name)
+        public async Task<CategoryGroup> CreateCategoryGroup (string name)
         {
             var categoryGroups= await _categoryGroupRepo.GetAll();
             var categoryGroup = categoryGroups.FirstOrDefault(x => x.Name == name);

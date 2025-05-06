@@ -80,7 +80,7 @@ builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository>();
-builder.Services.AddScoped<ILeaveAllocationService, LeaveAllocationService>();
+builder.Services.AddScoped<ICreateLeaveAllocationService, CreateLeaveAllocationService>();
 
 //service 
 builder.Services.AddScoped<PayrollService>();
