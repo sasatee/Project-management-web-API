@@ -11,10 +11,10 @@ namespace AuthenticationAPI.Controllers
     [ApiController]
     public class LeaveAllocationController : ControllerBase
     {
-        private readonly ILeaveAllocationService _leaveAllocationService;
+        private readonly ICreateLeaveAllocationService _leaveAllocationService;
         private readonly IEmployeeRepository _employeeRepository;
 
-        public LeaveAllocationController(ILeaveAllocationService leaveAllocationService, IEmployeeRepository employeeRepository)
+        public LeaveAllocationController(ICreateLeaveAllocationService leaveAllocationService, IEmployeeRepository employeeRepository)
         {
             _leaveAllocationService = leaveAllocationService;
             _employeeRepository = employeeRepository;

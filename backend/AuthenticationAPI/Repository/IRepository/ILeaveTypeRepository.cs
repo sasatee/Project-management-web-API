@@ -8,7 +8,6 @@
         Task<IEnumerable<LeaveType>> GetAllAsync();
         Task<LeaveType> CreateAsync(LeaveType LeaveType);
 
-        Task<LeaveType> FindLeaveType(Guid id);
 
 
     }

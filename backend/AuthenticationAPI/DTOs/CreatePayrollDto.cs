@@ -1,18 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Payroll.Model;
 
-namespace Payroll.Model
+namespace AuthenticationAPI.DTOs
 {
-    public class Payrolls
+
+    public class CreatePayrollDto
     {
-       
-        public Guid Id { get; set; }
+
+
         public DateTime PayDate { get; set; }
         public decimal BasicSalary { get; set; }
         public decimal Allowances { get; set; }
         public decimal Deductions { get; set; }
         public decimal NetPay { get; set; }
-        public Guid EmployeeId { get; set; }
-        public Employee Employee { get; set; }
 
+        
     }
 }
