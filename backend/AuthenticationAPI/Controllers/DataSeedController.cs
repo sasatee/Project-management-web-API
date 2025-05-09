@@ -22,6 +22,7 @@ namespace AuthenticationAPI.Controllers
             await _salaryStepSeeder.SeedUTM1SalarySteps();
             await _salaryStepSeeder.SeedUTM2SalarySteps();
             await _salaryStepSeeder.SeedUTM3SalarySteps();
+            await _salaryStepSeeder.SeedUTM4SalaryStep();
             return Ok(new { success = true, message = "All salary steps seeded successfully" });
         }
     }
