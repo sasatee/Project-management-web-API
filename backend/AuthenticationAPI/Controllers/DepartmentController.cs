@@ -2,35 +2,18 @@
 using AuthenticationAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Payroll.Model;
-using System.ComponentModel.DataAnnotations;
 
 namespace AuthenticationAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DepartmentController : Controller
+    public partial class DepartmentController : Controller
     {
         private readonly IRepository<Department> _departmentRepository;
 
         public DepartmentController(IRepository<Department> departmentRepository)
         {
             _departmentRepository = departmentRepository;
-        }
-
-        public class CreateDepartmentDto
-        {
-            
-            [Required]
-            public string DepartmentName { get; set; }
-            public string HeadOfDepartment { get; set; }
-        }
-
-        public class UpdateCreateDepartmentDto
-        {
-            
-            [Required]
-            public string DepartmentName { get; set; }
-            public string HeadOfDepartment { get; set; }
         }
 
 

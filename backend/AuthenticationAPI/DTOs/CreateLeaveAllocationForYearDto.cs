@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AuthenticationAPI.DTOs
+namespace AuthenticationAPI.Controllers
 {
     public class CreateLeaveAllocationForYearDto
     {

@@ -28,9 +28,11 @@ namespace AuthenticationAPI.Repository
             return leaveRequest;
         }
 
-        public Task DeleteAsync(Guid id)
+        public  async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var leaveRequest = await GetByIdAsync(id);
+             _context.LeaveRequests.Remove(leaveRequest);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> Exists(Guid id)

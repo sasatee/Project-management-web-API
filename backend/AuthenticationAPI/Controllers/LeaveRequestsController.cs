@@ -146,6 +146,12 @@ namespace AuthenticationAPI.Controllers
         }
 
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> RemoveLeaveRequest(Guid id)
+        {
+            await _leaveRequestrepository.DeleteAsync(id);
+            return NoContent();
+        }
 
     }
 }

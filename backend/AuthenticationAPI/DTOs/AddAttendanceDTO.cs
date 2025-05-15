@@ -1,4 +1,4 @@
-﻿namespace AuthenticationAPI.Controllers
+﻿namespace AuthenticationAPI.DTOs
 {
     public class AddAttendanceDTO {
         public Guid Id { get; set; }

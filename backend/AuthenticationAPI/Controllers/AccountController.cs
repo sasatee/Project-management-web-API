@@ -368,11 +368,11 @@ namespace AuthenticationAPI.Controllers
                     return BadRequest(new AuthResponseDto { isSuccess = false, Message = "Failed to create user account" });
                 }
 
-                //  default role "User" and "EMPLOYEE" 
+                //  default role "ADMIN" and "EMPLOYEE" 
                 await _userManager.AddToRoleAsync(user, "ADMIN");
                 await _userManager.AddToRoleAsync(user, "EMPLOYEE");
             }
-            else
+            else //already authenticate with google ; just update
             {
                 user.GoogleId = googleId;
                 user.GooglePicture = picture;

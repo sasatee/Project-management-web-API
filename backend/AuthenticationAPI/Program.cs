@@ -72,8 +72,7 @@ builder.Services.AddAuthentication(options =>
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
 });
 
-//Iconfiguration as singleton dp 
-//builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
 
 // Add services and repository  implementation
 builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
