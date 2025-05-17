@@ -36,12 +36,12 @@ var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
 //add database 
 //sql server database
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+   options.UseNpgsql(builder.Configuration.GetConnectionString("NeonConnection")));
 
 //sql lite 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-      options.UseSqlite("Data Source = Hrdummy.db"));
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//      options.UseSqlite("Data Source = Hrdummy.db"));
 
 //add identity role in DI container
 builder.Services.AddIdentity<AppUser, IdentityRole>()
@@ -134,30 +134,25 @@ builder.Services.AddSwaggerGen(u =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI();
+app.MapOpenApi();
+app.MapScalarApiReference(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.MapOpenApi();
-    app.MapScalarApiReference(options =>
+    options
+     .WithDarkMode(true)
+    .WithDefaultHttpClient(ScalarTarget.Node, ScalarClient.HttpClient)
+    .WithDarkModeToggle(true)
+    .WithPreferredScheme("Bearer")
+    .WithHttpBearerAuthentication(bearer =>
     {
-        options
-         .WithDarkMode(true)
-        .WithDefaultHttpClient(ScalarTarget.Node, ScalarClient.HttpClient)
-        .WithDarkModeToggle(true)
-        .WithPreferredScheme("Bearer")
-        .WithHttpBearerAuthentication(bearer =>
-        {
-            bearer.Token = "Bearer [token]";
-        });
-        options.Authentication = new ScalarAuthenticationOptions
-        {
-            PreferredSecurityScheme = "Bearer"
-        };
+        bearer.Token = "Bearer [token]";
     });
-    // Remove HTTPS redirection in development
-    //  app.UseHttpsRedirection();
-}
+    options.Authentication = new ScalarAuthenticationOptions
+    {
+        PreferredSecurityScheme = "Bearer"
+    };
+});
 
 // Use CORS before other middleware
 app.UseCors("AllowAll"); // Changed from "AllowFrontend" to match the policy name
@@ -168,21 +163,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// synchronize database with latest migration
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<ApplicationDbContext>();
-        await context.Database.MigrateAsync();
-      
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding the database.");
-    }
-}
+
 
 app.Run();
