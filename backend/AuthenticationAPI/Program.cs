@@ -134,30 +134,25 @@ builder.Services.AddSwaggerGen(u =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI();
+app.MapOpenApi();
+app.MapScalarApiReference(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.MapOpenApi();
-    app.MapScalarApiReference(options =>
+    options
+     .WithDarkMode(true)
+    .WithDefaultHttpClient(ScalarTarget.Node, ScalarClient.HttpClient)
+    .WithDarkModeToggle(true)
+    .WithPreferredScheme("Bearer")
+    .WithHttpBearerAuthentication(bearer =>
     {
-        options
-         .WithDarkMode(true)
-        .WithDefaultHttpClient(ScalarTarget.Node, ScalarClient.HttpClient)
-        .WithDarkModeToggle(true)
-        .WithPreferredScheme("Bearer")
-        .WithHttpBearerAuthentication(bearer =>
-        {
-            bearer.Token = "Bearer [token]";
-        });
-        options.Authentication = new ScalarAuthenticationOptions
-        {
-            PreferredSecurityScheme = "Bearer"
-        };
+        bearer.Token = "Bearer [token]";
     });
-    // Remove HTTPS redirection in development
-    //  app.UseHttpsRedirection();
-}
+    options.Authentication = new ScalarAuthenticationOptions
+    {
+        PreferredSecurityScheme = "Bearer"
+    };
+});
 
 // Use CORS before other middleware
 app.UseCors("AllowAll"); // Changed from "AllowFrontend" to match the policy name
