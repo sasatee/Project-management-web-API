@@ -32,16 +32,15 @@ builder.Services.AddCors(options =>
 
 var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
-// Add services to the container.
 
-//add database 
-//sql server database
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-   options.UseNpgsql(builder.Configuration.GetConnectionString("NeonConnection")));
+
+//pg  database
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//   options.UseNpgsql(builder.Configuration.GetConnectionString("NeonConnection")));
 
 //sql lite 
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//      options.UseSqlite("Data Source = Hrdummy.db"));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+      options.UseSqlite("Data Source = Hrdummy.db"));
 
 //add identity role in DI container
 builder.Services.AddIdentity<AppUser, IdentityRole>()
@@ -133,26 +132,28 @@ builder.Services.AddSwaggerGen(u =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-app.UseSwagger();
-app.UseSwaggerUI();
-app.MapOpenApi();
-app.MapScalarApiReference(options =>
+if (app.Environment.IsDevelopment())
 {
-    options
-     .WithDarkMode(true)
-    .WithDefaultHttpClient(ScalarTarget.Node, ScalarClient.HttpClient)
-    .WithDarkModeToggle(true)
-    .WithPreferredScheme("Bearer")
-    .WithHttpBearerAuthentication(bearer =>
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.MapOpenApi();
+    app.MapScalarApiReference(options =>
     {
-        bearer.Token = "Bearer [token]";
+        options
+         .WithDarkMode(true)
+        .WithDefaultHttpClient(ScalarTarget.Node, ScalarClient.HttpClient)
+        .WithDarkModeToggle(true)
+        .WithPreferredScheme("Bearer")
+        .WithHttpBearerAuthentication(bearer =>
+        {
+            bearer.Token = "Bearer [token]";
+        });
+        options.Authentication = new ScalarAuthenticationOptions
+        {
+            PreferredSecurityScheme = "Bearer"
+        };
     });
-    options.Authentication = new ScalarAuthenticationOptions
-    {
-        PreferredSecurityScheme = "Bearer"
-    };
-});
+}
 
 // Use CORS before other middleware
 app.UseCors("AllowAll"); // Changed from "AllowFrontend" to match the policy name
