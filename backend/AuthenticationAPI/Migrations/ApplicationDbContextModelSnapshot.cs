@@ -694,9 +694,9 @@ namespace AuthenticationAPI.Migrations
             modelBuilder.Entity("AuthenticationAPI.Models.SalaryProgression", b =>
                 {
                     b.HasOne("AuthenticationAPI.Models.CategoryGroup", "CategoryGroup")
-                        .WithMany("SalaryProgressions")
+                        .WithMany()
                         .HasForeignKey("CategoryGroupId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CategoryGroup");
@@ -917,8 +917,6 @@ namespace AuthenticationAPI.Migrations
             modelBuilder.Entity("AuthenticationAPI.Models.CategoryGroup", b =>
                 {
                     b.Navigation("Employees");
-
-                    b.Navigation("SalaryProgressions");
 
                     b.Navigation("SalarySteps");
                 });
