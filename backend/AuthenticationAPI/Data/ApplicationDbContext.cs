@@ -139,11 +139,11 @@ namespace AuthenticationAPI.Data
                 .OnDelete(DeleteBehavior.NoAction);
 
             // Configure relationships
-            modelBuilder.Entity<SalaryProgression>()
-                .HasOne(s => s.CategoryGroup)
-                .WithMany(c => c.SalaryProgressions)
-                .HasForeignKey(s => s.CategoryGroupId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<SalaryProgression>()
+            //    .HasOne(s => s.CategoryGroup)
+            //    .WithMany(c => c.SalaryProgressions)
+            //    .HasForeignKey(s => s.CategoryGroupId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<SalaryStep>()
                 .HasOne(s => s.CategoryGroup)

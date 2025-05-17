@@ -137,7 +137,7 @@ namespace AuthenticationAPI.Controllers
 
         [HttpPut("{id}/approve")]
       //  [Authorize(Roles = "ADMIN")]
-        public  async Task<IActionResult> ApproveLeaveRequest(Guid id, [FromBody] bool approved)
+        public  async Task<IActionResult> ApproveLeaveRequest(Guid id, [FromQuery] bool approved)
         {
            if(!await _leaveRequestrepository.Exists(id)) return NotFound();
 

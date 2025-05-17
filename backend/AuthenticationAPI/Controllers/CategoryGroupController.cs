@@ -26,12 +26,12 @@ namespace AuthenticationAPI.Controllers
             return Ok(categoryGroup);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("/EmployeeWith/SalaryProgression/{id}")]
         public IActionResult GetCategoryGroupbyId([FromRoute] Guid id)
         {
             var category = _categoryGroupRepository.Get(
                 u => u.Id == id,
-                includeProperties: "SalaryProgressions,Employees"
+                includeProperties: "SalarySteps,Employees"
             );
 
             if (category == null)
@@ -43,20 +43,30 @@ namespace AuthenticationAPI.Controllers
             {
                 id = category.Id,
                 name = category.Name,
-                salaryProgressions = category.SalaryProgressions?.Select(sp => new
+                count =  category.Employees?.Count(),
+
+                EmployeeData = category.Employees?.Select(e => new
                 {
-                    year = sp.Year,
-                    salary = sp.Salary,
-                    increment = sp.Increment
+                    e.FirstName,
+                    e.LastName,
+                    e.DateOfLeaving,
+                    e.DateOfJoining,
+                    e.AppUserId,
+                    e.Email,
+                    e.CurrentSalary,
+                    e.Address,
+                    e.DepartmentId
+                    
                 }),
-                employees = category.Employees?.Select(e => new
+        
+                SalarySteps = category.SalarySteps?.Select(s => new
                 {
-                    id = e.Id,
-                    firstName = e.FirstName,
-                    lastName = e.LastName,
-                    email = e.Email,
-                    currentSalary = e.CurrentSalary,
-                    yearsOfService = e.YearsOfService
+                    Id = s.Id,
+                    Increment = s.Increment,
+                    ToAmount = s.ToAmount,
+                    FromAmount = s.FromAmount,
+                    CategoryGroupId = s.CategoryGroupId,
+           
                 })
             };
 
@@ -92,6 +102,21 @@ namespace AuthenticationAPI.Controllers
 
 
 
+        }
+
+
+        [HttpDelete("{id}")]
+
+        public async Task<IActionResult> DeleteCategory([FromRoute] Guid id)
+        {
+            var exist = await _categoryGroupRepository.FindByIdAsync(id);
+
+            if (exist != null)
+            {
+                await _categoryGroupRepository.DeleteAsync(id);
+                await _categoryGroupRepository.SaveChangesAsync();
+            }
+            return NoContent();
         }
 
 

@@ -3,6 +3,7 @@ using AuthenticationAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Payroll.Model;
+using System.ComponentModel.DataAnnotations;
 
 namespace AuthenticationAPI.Controllers
 {
@@ -40,7 +41,7 @@ namespace AuthenticationAPI.Controllers
             };
             await _attendanceRepository.AddAsync(attendance);
             await _attendanceRepository.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetAttendances),new {id = addAttendanceDTO.Id});
+            return CreatedAtAction(nameof(GetAttendances),new {EmployeeId = addAttendanceDTO.EmployeeId});
         }
 
         [HttpGet("{id}")]
@@ -72,13 +73,68 @@ namespace AuthenticationAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAttendances()
+        public async Task<IActionResult> GetAttendances()
         {
 
-            var attendances = _attendanceRepository.GetAll();
+            var attendances = await _attendanceRepository.GetAll();
 
             return Ok(attendances);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAttendence([FromRoute] Guid id, [FromBody] UpdateAttencesDtos updateAttencesDtos)
+        {
+            var attendence = await _attendanceRepository.FindByIdAsync(id);
+
+            if (attendence == null)
+            {
+
+                return NotFound(new { isFalse = false, Message = $"attendence not found with {id}" });
+
+            }
+            attendence.CheckInTime = updateAttencesDtos.CheckInTime;
+            attendence.CheckOutTime = updateAttencesDtos.CheckOutTime;
+            attendence.OvertimeHours = updateAttencesDtos.OvertimeHours;
+            attendence.Date = updateAttencesDtos.Date;
+
+            _attendanceRepository.Update(attendence);
+            await _attendanceRepository.SaveChangesAsync();
+
+            return NoContent();
+
+        }
+       [HttpDelete("{id}")]
+        public async Task<IActionResult> DeteleAttendece([FromRoute] Guid id)
+        {
+            var exist =  await _attendanceRepository.FindByIdAsync(id);
+
+            if(exist == null)
+            {
+                return NotFound();
+
+            }
+
+            var attendence =  _attendanceRepository.DeleteAsync(id);
+                await _employeeRepository.SaveChangesAsync();
+
+            return NoContent();
+
+
+        }
     }
 
+    public class UpdateAttencesDtos
+    {
+     
+        public DateTime Date { get; set; }
+        [Required]
+        public TimeSpan CheckInTime { get; set; }
+        [Required]
+        public TimeSpan CheckOutTime { get; set; }
+        [Required]
+        public decimal OvertimeHours { get; set; }
+ 
+
+
+    }
 }

@@ -13,14 +13,14 @@ namespace AuthenticationAPI.Repository.IRepository
         Task DeleteAsync(Guid id);
         Task<int> SaveChangesAsync();
 
-        
+
 
         /// <summary>
-        /// 
+        /// Retrieves a single entity matching the specified filter expression, optionally including related entities.
         /// </summary>
-        /// <param name="filter"></param>
-        /// <param name="includeProperties"></param>
-        /// <returns></returns>
+        /// <param name="filter">A LINQ expression to filter the entity.</param>
+        /// <param name="includeProperties">A comma-separated list of related entity property names to include in the query (optional).</param>
+        /// <returns>The entity matching the filter, or null if not found.</returns>
         T Get(Expression<Func<T, bool>> filter, string? includeProperties = null);
 
     }

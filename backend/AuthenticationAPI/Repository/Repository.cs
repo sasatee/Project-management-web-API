@@ -64,20 +64,22 @@ namespace AuthenticationAPI.Repository
         public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
-            query = query.Where(filter);
 
-            if (!string.IsNullOrEmpty(includeProperties))
-            {
-                foreach (var Includeproperty in includeProperties
-                   .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+           
+                query = query.Where(filter).AsSplitQuery();
+            
+           
+                if (!string.IsNullOrEmpty(includeProperties))
                 {
-
-                    query = query.Include(Includeproperty);
-
-
+                    foreach (var Includeproperty in includeProperties
+                       .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        query = query.Include(Includeproperty);
+                    }
                 }
-            }
-            return query?.FirstOrDefault();
+            
+
+            return query.FirstOrDefault()!;
         }
     }
 }
