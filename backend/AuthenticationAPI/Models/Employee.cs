@@ -32,9 +32,12 @@ namespace Payroll.Model
         public ICollection<Attendance> Attendances { get; set; }
         public ICollection<PerformanceReview> PerformanceReviews { get; set; }
         public ICollection<Payrolls> Payrolls { get; set; }
+        public ICollection<Allowances> Allowances { get; set; }
 
         public AppUser AppUser { get; set; }
         public string AppUserId { get; set; }
+
+        public string? NIC {  get; set; }
 
         public int YearsOfService { get; set; }
         public decimal CurrentSalary { get; set; }
@@ -42,5 +45,7 @@ namespace Payroll.Model
         [ForeignKey(nameof(CategoryGroup))]
         public Guid? CategoryGroupId { get; set; }
         public CategoryGroup? CategoryGroup { get; set; }
+
+        
     }
 }

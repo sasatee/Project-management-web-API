@@ -17,6 +17,36 @@ namespace AuthenticationAPI.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
 
+            modelBuilder.Entity("AuthenticationAPI.Models.Allowances", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("Allowances");
+                });
+
             modelBuilder.Entity("AuthenticationAPI.Models.AppUser", b =>
                 {
                     b.Property<string>("Id")
@@ -41,6 +71,9 @@ namespace AuthenticationAPI.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("GoogleId")
                         .HasColumnType("TEXT");
@@ -517,6 +550,9 @@ namespace AuthenticationAPI.Migrations
                     b.Property<Guid?>("LeaveRequestId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("NIC")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -691,12 +727,23 @@ namespace AuthenticationAPI.Migrations
                     b.ToTable("Trainings");
                 });
 
+            modelBuilder.Entity("AuthenticationAPI.Models.Allowances", b =>
+                {
+                    b.HasOne("Payroll.Model.Employee", "Employee")
+                        .WithMany("Allowances")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("AuthenticationAPI.Models.SalaryProgression", b =>
                 {
                     b.HasOne("AuthenticationAPI.Models.CategoryGroup", "CategoryGroup")
-                        .WithMany("SalaryProgressions")
+                        .WithMany()
                         .HasForeignKey("CategoryGroupId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CategoryGroup");
@@ -918,8 +965,6 @@ namespace AuthenticationAPI.Migrations
                 {
                     b.Navigation("Employees");
 
-                    b.Navigation("SalaryProgressions");
-
                     b.Navigation("SalarySteps");
                 });
 
@@ -935,6 +980,8 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("Payroll.Model.Employee", b =>
                 {
+                    b.Navigation("Allowances");
+
                     b.Navigation("Attendances");
 
                     b.Navigation("Payrolls");
