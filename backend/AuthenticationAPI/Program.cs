@@ -86,6 +86,7 @@ builder.Services.AddScoped<PayrollService>();
 builder.Services.AddScoped<SeedSalaryForCategory>();
 builder.Services.AddTransient<GenerateToken, TokenGenerator>();
 
+
 //Generic repository implementation 
 builder.Services.AddScoped<IRepository<Department>, Repository<Department>>();
 builder.Services.AddScoped<IRepository<Employee>, Repository<Employee>>();
@@ -95,6 +96,7 @@ builder.Services.AddScoped<IRepository<SalaryProgression>, Repository<SalaryProg
 builder.Services.AddScoped<IRepository<CategoryGroup>, Repository<CategoryGroup>>();
 builder.Services.AddScoped<IRepository<SalaryStep>, Repository<SalaryStep>>();
 builder.Services.AddScoped<IRepository<Attendance>, Repository<Attendance>>();
+builder.Services.AddScoped<IRepository<Payrolls>, Repository<Payrolls>>();
 
 builder.Services.AddOpenApi();
 

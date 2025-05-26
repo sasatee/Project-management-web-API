@@ -1,7 +1,7 @@
 ﻿namespace AuthenticationAPI.DTOs
 {
     public class AddAttendanceDTO {
-        public Guid Id { get; set; }
+        
         public Guid EmployeeId { get; set; }  
         public DateTime Date { get; set; }
         public TimeSpan CheckInTime { get; set; }
