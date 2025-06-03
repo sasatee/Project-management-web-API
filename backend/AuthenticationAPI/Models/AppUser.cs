@@ -18,7 +18,7 @@ namespace AuthenticationAPI.Models
         public string? GooglePicture { get; set; }
         public UserGender Gender { get; set; }
 
-        public virtual ICollection<LeaveAllocation> LeaveAllocations { get; set; } = new List<LeaveAllocation> { };
-        public virtual ICollection<LeaveRequest> LeaveRequests { get; set; } = new List<LeaveRequest> { };
+        public  ICollection<LeaveAllocation> LeaveAllocations { get; set; } = new List<LeaveAllocation> { };
+        public  ICollection<LeaveRequest> LeaveRequests { get; set; } = new List<LeaveRequest> { };
     }
 }

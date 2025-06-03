@@ -3,7 +3,6 @@ using AuthenticationAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Payroll.Model;
-using System.ComponentModel.DataAnnotations;
 
 namespace AuthenticationAPI.Controllers
 {
@@ -121,20 +120,5 @@ namespace AuthenticationAPI.Controllers
 
 
         }
-    }
-
-    public class UpdateAttencesDtos
-    {
-     
-        public DateTime Date { get; set; }
-        [Required]
-        public TimeSpan CheckInTime { get; set; }
-        [Required]
-        public TimeSpan CheckOutTime { get; set; }
-        [Required]
-        public decimal OvertimeHours { get; set; }
- 
-
-
     }
 }

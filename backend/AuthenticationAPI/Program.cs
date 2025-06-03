@@ -96,7 +96,7 @@ builder.Services.AddScoped<IRepository<SalaryProgression>, Repository<SalaryProg
 builder.Services.AddScoped<IRepository<CategoryGroup>, Repository<CategoryGroup>>();
 builder.Services.AddScoped<IRepository<SalaryStep>, Repository<SalaryStep>>();
 builder.Services.AddScoped<IRepository<Attendance>, Repository<Attendance>>();
-builder.Services.AddScoped<IRepository<Allowances>, Repository<Allowances>>();
+builder.Services.AddScoped<IRepository<Allowance>, Repository<Allowance>>();
 builder.Services.AddScoped<IRepository<Payrolls>, Repository<Payrolls>>();
 
 
