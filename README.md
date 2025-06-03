@@ -96,11 +96,5 @@ Key settings in `appsettings.json`:
 - `EmailSetting`: SMTP credentials for password reset
 - `Authentication:Google`: Google OAuth client ID/secret
 
----
 
-## Project Overview (for CV)
 
-**Project Management Web API**  
-*ASP.NET Core 9, Entity Framework Core, JWT, PostgreSQL/SQL Server/SQLite*
-
-Developed a comprehensive RESTful API for HR and project management, supporting user authentication (JWT & Google OAuth), employee and role management, leave and payroll processing, and audit logging. Implemented secure, scalable endpoints with role-based access, integrated Swagger/Scalar for API documentation, and supported multiple database backends. Designed robust data models for employees, departments, payroll, leave, and training, ensuring maintainability and extensibility for enterprise use.
