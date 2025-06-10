@@ -34,6 +34,8 @@ namespace Payroll.Model
         public ICollection<Payrolls> Payrolls { get; set; }
         public ICollection<Allowance> Allowances { get; set; }
 
+        public ICollection<Deduction> Deductions { get; set; }
+
         public AppUser AppUser { get; set; }
         public string AppUserId { get; set; }
 

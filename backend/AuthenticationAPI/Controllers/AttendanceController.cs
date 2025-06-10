@@ -88,7 +88,7 @@ namespace AuthenticationAPI.Controllers
             if (attendence == null)
             {
 
-                return NotFound(new { isFalse = false, Message = $"attendence not found with {id}" });
+                return NotFound(new { isSucess = false, Message = $"attendence not found with {id}" });
 
             }
             attendence.CheckInTime = updateAttencesDtos.CheckInTime;

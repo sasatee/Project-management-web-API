@@ -5,8 +5,8 @@ using AuthenticationAPI.Repository;
 using AuthenticationAPI.Repository.IRepository;
 using AuthenticationAPI.Service;
 using AuthenticationAPI.util;
+using Ecommerce.API.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -159,8 +159,9 @@ if (app.Environment.IsDevelopment())
         };
     });
 }
-
-// Use CORS before other middleware
+//Middleware exceptions
+app.UseExceptionHandlingMiddleware();
+    
 app.UseCors("AllowAll"); // Changed from "AllowFrontend" to match the policy name
 //app.UseCors("AllowFrontend");
 

@@ -50,7 +50,7 @@ namespace AuthenticationAPI.Repository
 
         }
 
-        public async Task<LeaveRequest> GetByIdAsync(Guid id)
+        public async Task<LeaveRequest?> GetByIdAsync(Guid id)
         {
 
 

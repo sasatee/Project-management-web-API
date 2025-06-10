@@ -97,5 +97,40 @@ namespace AuthenticationAPI.Controllers
             return CreatedAtAction(nameof(GetAllowanceById),new {id = obj.Id}, new { result = obj, isSuccess = true });
 
         }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<AllowanceCreateDto>> UpdateAllowance([FromBody] AllowanceCreateDto dto,[FromRoute] Guid id )
+        {
+
+          Allowance existing = await _repository.FindByIdAsync(id);
+
+          
+             
+            if (existing == null)
+            {
+               
+
+                    return NotFound(new { isSucess = false, Message = $"attendence not found with {id}" });
+
+                
+            }
+
+            existing.Remarks = dto.Remarks;
+            existing.EffectiveDate = DateTime.UtcNow;
+            //existing.EmployeeId = dto.EmployeeId;
+            existing.TypeName = dto.TypeName;
+            existing.Description = dto.Description;
+            existing.ModifiedAt = DateTime.UtcNow;
+            existing.Remarks = dto.Remarks;
+
+
+                
+         
+            _repository.Update(existing);
+            await _repository.SaveChangesAsync();
+
+            return NoContent();
+
+        }
     }
 }

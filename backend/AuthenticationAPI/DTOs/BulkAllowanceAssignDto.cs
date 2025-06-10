@@ -1,6 +1,4 @@
-﻿using AuthenticationAPI.DTOs;
-
-namespace AuthenticationAPI.Controllers
+﻿namespace AuthenticationAPI.DTOs
 {
     public class BulkAllowanceAssignDto
     {
