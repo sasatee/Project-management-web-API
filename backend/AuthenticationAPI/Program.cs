@@ -140,8 +140,7 @@ builder.Services.AddSwaggerGen(u =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
     app.MapOpenApi();
@@ -161,7 +160,7 @@ if (app.Environment.IsDevelopment())
             PreferredSecurityScheme = "Bearer"
         };
     });
-}
+
 //Middleware exceptions
 app.UseExceptionHandlingMiddleware();
     
