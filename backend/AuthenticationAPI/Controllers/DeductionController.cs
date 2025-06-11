@@ -1,5 +1,6 @@
 ﻿using AuthenticationAPI.DTOs;
 using AuthenticationAPI.Models;
+using AuthenticationAPI.Repository;
 using AuthenticationAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Payroll.Model;
@@ -33,6 +34,20 @@ namespace AuthenticationAPI.Controllers
 
 
         }
+
+        [HttpGet("GetDeductionWith/{employeeId}")]
+        public async Task<ActionResult<List<Allowance>>> GetAllowanceById([FromRoute] Guid employeeId)
+        {
+
+            var allowances = await _deductionRepository.GetAll(s => s.EmployeeId == employeeId);
+
+
+            return Ok(allowances);
+
+
+
+        }
+
 
         [HttpDelete("{id}")]
 
@@ -105,7 +120,7 @@ namespace AuthenticationAPI.Controllers
 
             var responseDto = new DeductionResponseDto
             {
-                Id = deduction.Id,
+             
                 TypeName = deduction.TypeName,
                 Amount = deduction.Amount,
                 EffectiveDate = deduction.EffectiveDate,

@@ -1,4 +1,5 @@
 ﻿using AuthenticationAPI.DTOs;
+using AuthenticationAPI.Models;
 using AuthenticationAPI.Repository.IRepository;
 using AuthenticationAPI.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +13,17 @@ namespace AuthenticationAPI.Controllers
     {
         private readonly PayrollService _payrollService;
         private readonly IRepository<Payrolls> _repository;
+        private readonly IRepository<Allowance> _allowanceRepository;
+        private readonly IRepository<Deduction> _deductionRepository;
 
-        public PayrollController(PayrollService payrollService, IRepository<Payrolls> repository)
+        public PayrollController(PayrollService payrollService, IRepository<Payrolls> repository,IRepository<Allowance> allowanceRepository,IRepository<Deduction> deductionRepository)
         {
 
             _payrollService = payrollService;
             _repository = repository;
+            _allowanceRepository = allowanceRepository;
+            _deductionRepository = deductionRepository;
+           
 
         }
 
@@ -45,14 +51,21 @@ namespace AuthenticationAPI.Controllers
         {
             var baseSalary = await _payrollService.CalculateSalaryAsPerScale(categoryId, employeeId, YearOfService);
 
+
+            var deductions = await _deductionRepository.GetAll(d => d.EmployeeId == employeeId);
+            var totalDeductions = deductions.Sum(d => d.Amount);
+
+            var allowances = await _allowanceRepository.GetAll(d => d.EmployeeId == employeeId);
+            var totalAllowances = allowances.Sum(d => d.Amount);
+
             var payroll = new Payrolls
             {
-                Allowances = createPayrollDto.Allowances,
+                Allowances = totalAllowances,
                 BasicSalary = baseSalary,
-                Deductions = createPayrollDto.Deductions,
+                Deductions = totalDeductions,
                 PayDate = new DateTime(),
                 EmployeeId = employeeId,
-               NetPay = baseSalary + createPayrollDto.Allowances - createPayrollDto.Deductions
+                NetPay = baseSalary + totalAllowances - totalDeductions
             };
 
             await _repository.AddAsync(payroll);
@@ -121,6 +134,8 @@ namespace AuthenticationAPI.Controllers
             payroll.Deductions = Dto.Deductions;
             payroll.Allowances = Dto.Allowances;
             payroll.BasicSalary = Dto.BasicSalary;
+
+
             _repository.Update(payroll);
             await _repository.SaveChangesAsync();
             return NoContent();
@@ -138,12 +153,30 @@ namespace AuthenticationAPI.Controllers
         }
 
 
+        [HttpGet("deductions/total/{employeeId}")]
+        public async Task<IActionResult> GetTotalDeductionsByEmployeeId([FromRoute] Guid employeeId)
+        {
+            var deductions = await _deductionRepository.GetAll(d => d.EmployeeId == employeeId);
+            var totalDeductions = deductions.Sum(d => d.Amount);
+            return Ok(new { employeeId, totalDeductions });
+        }
 
 
 
-        
+        [HttpGet("allowance/total/{employeeId}")]
+        public async Task<IActionResult> GetTotalAllowancesByEmployeeId([FromRoute] Guid employeeId)
+        {
+            var allowances = await _allowanceRepository.GetAll(d => d.EmployeeId == employeeId);
+            var totalAllowances = allowances.Sum(d => d.Amount);
+            return Ok(new { employeeId, totalAllowances });
+        }
 
 
-      
+
+
+
+
+
+
     }
 }

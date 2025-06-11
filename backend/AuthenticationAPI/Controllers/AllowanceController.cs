@@ -2,6 +2,7 @@
 using AuthenticationAPI.Models;
 using AuthenticationAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Payroll.Model;
 
 
 namespace AuthenticationAPI.Controllers
@@ -25,6 +26,8 @@ namespace AuthenticationAPI.Controllers
            var allowances = await _repository.GetAll();
             return Ok(allowances);
         }
+
+    
 
         [HttpGet("{id}")]
         public async Task<ActionResult<GetAllowanceDto>> GetAllowancebyId([FromRoute] Guid id)
@@ -63,7 +66,8 @@ namespace AuthenticationAPI.Controllers
                 EffectiveDate = a.EffectiveDate,
                 Remarks = a.Remarks,
                 ModifiedAt = DateTime.UtcNow,
-                EmployeeId = dto.EmployeeId
+                EmployeeId = dto.EmployeeId,
+                Amount = a.Amount
             }).ToList();
 
             foreach (var allowance in allowances)
@@ -88,6 +92,7 @@ namespace AuthenticationAPI.Controllers
                 Remarks= dto.Remarks,
                 ModifiedAt = DateTime.UtcNow,
                 TypeName = dto.TypeName,
+                Amount= dto.Amount
             };
             await _repository.AddAsync(obj);
             await _repository.SaveChangesAsync();
@@ -115,7 +120,7 @@ namespace AuthenticationAPI.Controllers
 
             existing.Remarks = dto.Remarks;
             existing.EffectiveDate = DateTime.UtcNow;
-            //existing.EmployeeId = dto.EmployeeId;
+           existing.Amount = dto.Amount;
             existing.TypeName = dto.TypeName;
             existing.Description = dto.Description;
             existing.ModifiedAt = DateTime.UtcNow;

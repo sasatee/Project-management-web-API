@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Payroll.Model;
+using System.ComponentModel.DataAnnotations;
 
 namespace AuthenticationAPI.DTOs
 {
@@ -7,7 +8,8 @@ namespace AuthenticationAPI.DTOs
 
     public class CreateDeductionRequestDto
     {
-   
+
+        [Required(ErrorMessage = "TypeName is required")]
         public string? TypeName { get; set; }
         public decimal Amount { get; set; }
         public Guid EmployeeId { get; set; }
@@ -19,6 +21,7 @@ namespace AuthenticationAPI.DTOs
     public class CreateDeductionResponseDto
     {
 
+        [Required(ErrorMessage = "TypeName is required")]
         public string? TypeName { get; set; }
         public decimal Amount { get; set; }
         public DateTime EffectiveDate { get; set; }
@@ -30,7 +33,7 @@ namespace AuthenticationAPI.DTOs
 
     public class DeductionResponseDto
     {
-        public Guid Id { get; set; }
+        [Required(ErrorMessage = "TypeName is required")]
         public string? TypeName { get; set; }
         public decimal Amount { get; set; }
         public DateTime EffectiveDate { get; set; }

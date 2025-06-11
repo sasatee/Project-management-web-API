@@ -1,7 +1,10 @@
-﻿namespace AuthenticationAPI.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AuthenticationAPI.DTOs
 {
     public class AddAttendanceDTO {
-        
+
+        [Required(ErrorMessage = "employee id is required")]
         public Guid EmployeeId { get; set; }  
         public DateTime Date { get; set; }
         public TimeSpan CheckInTime { get; set; }

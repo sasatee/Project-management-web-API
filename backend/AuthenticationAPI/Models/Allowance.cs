@@ -11,6 +11,7 @@ namespace AuthenticationAPI.Models
         public DateTime EffectiveDate { get; set; }
         public string? Remarks { get; set; }
 
+        public decimal Amount { get; set; }
         public DateTime ModifiedAt { get; set; }
        
         public Guid EmployeeId { get; set; }
