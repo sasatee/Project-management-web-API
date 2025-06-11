@@ -74,12 +74,12 @@ builder.Services.AddAuthentication(options =>
 
 
 
-// Add services and repository  implementation
+// Add services and _repository  implementation
 builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository>();
-builder.Services.AddScoped<ICreateLeaveAllocationService, CreateLeaveAllocationService>();
+builder.Services.AddScoped<ILeaveAllocationService, CreateLeaveAllocationService>();
 
 //service 
 builder.Services.AddScoped<PayrollService>();
@@ -87,7 +87,7 @@ builder.Services.AddScoped<SeedSalaryForCategory>();
 builder.Services.AddTransient<GenerateToken, TokenGenerator>();
 
 
-//Generic repository implementation 
+//Generic _repository implementation 
 builder.Services.AddScoped<IRepository<Department>, Repository<Department>>();
 builder.Services.AddScoped<IRepository<Employee>, Repository<Employee>>();
 builder.Services.AddScoped<IRepository<JobTitle>, Repository<JobTitle>>();
@@ -98,6 +98,7 @@ builder.Services.AddScoped<IRepository<SalaryStep>, Repository<SalaryStep>>();
 builder.Services.AddScoped<IRepository<Attendance>, Repository<Attendance>>();
 builder.Services.AddScoped<IRepository<Allowance>, Repository<Allowance>>();
 builder.Services.AddScoped<IRepository<Payrolls>, Repository<Payrolls>>();
+builder.Services.AddScoped<IRepository<LeaveAllocation>, Repository<LeaveAllocation>>();
 
 
 builder.Services.AddOpenApi();

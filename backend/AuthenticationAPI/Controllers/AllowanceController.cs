@@ -1,15 +1,14 @@
 ﻿using AuthenticationAPI.DTOs;
 using AuthenticationAPI.Models;
 using AuthenticationAPI.Repository.IRepository;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Payroll.Model;
+
 
 namespace AuthenticationAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public partial class AllowanceController : Controller
+    public class AllowanceController : Controller
     {
 
         private readonly IRepository<Allowance> _repository;
@@ -110,7 +109,7 @@ namespace AuthenticationAPI.Controllers
             {
                
 
-                    return NotFound(new { isSucess = false, Message = $"attendence not found with {id}" });
+                    return NotFound(new { isSucess = false, Message = $"Allowance not found with {id}" });
 
                 
             }
@@ -131,6 +130,24 @@ namespace AuthenticationAPI.Controllers
 
             return NoContent();
 
+        }
+
+
+        [HttpDelete("{id}")]
+
+        public async Task<IActionResult> RemoveAllowance([FromRoute] Guid id)
+        {
+
+            Allowance exist = await _repository.FindByIdAsync(id);
+            if (exist is not null)
+            {
+                return NotFound(new { isSucess = false, Message = $"Allowance not found with {id}" });
+            }
+
+            await _repository.DeleteAsync(id);
+
+            await _repository.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

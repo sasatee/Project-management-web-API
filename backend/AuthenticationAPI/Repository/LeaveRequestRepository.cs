@@ -62,7 +62,7 @@ namespace AuthenticationAPI.Repository
         public async Task<List<LeaveRequest>> GetLeaveRequestsByEmployee(string employeeId)
         {  
                  var requests = await _context.LeaveRequests
-                .Where(q => q.AppUserId.ToString() == employeeId)
+                .Where(q => q.RequestingEmployeeId.ToString() == employeeId)
                 .Include(q => q.LeaveType)
                 .ToListAsync();
 
