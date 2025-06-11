@@ -13,3 +13,4 @@
 /.vs/slnx.sqlite-journal
 /.vs/slnx.sqlite
 /.vs/VSWorkspaceState.json
+/backend/AuthenticationAPI/appsettings.json

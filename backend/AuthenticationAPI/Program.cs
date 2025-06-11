@@ -41,7 +41,8 @@ var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
 //sql lite 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-      options.UseSqlite("Data Source = Hrdummy.db"));
+   options.UseNpgsql(builder.Configuration.GetConnectionString("NeonConnection")));
+
 
 //add identity role in DI container
 builder.Services.AddIdentity<AppUser, IdentityRole>()
