@@ -10,4 +10,6 @@
 /backend/AuthenticationAPI/Hrdummy.db-shm
 /backend/AuthenticationAPI/Hrdummy.db-wal
 /backend/AuthenticationAPI/Hrdummy.db
-/.vs
+/.vs/slnx.sqlite-journal
+/.vs/slnx.sqlite
+/.vs/VSWorkspaceState.json

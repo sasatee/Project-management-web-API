@@ -23,6 +23,9 @@ namespace AuthenticationAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
@@ -635,13 +638,6 @@ namespace AuthenticationAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("BaseSalary")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Grade")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -773,7 +769,7 @@ namespace AuthenticationAPI.Migrations
             modelBuilder.Entity("AuthenticationAPI.Models.Deduction", b =>
                 {
                     b.HasOne("Payroll.Model.Employee", "Employee")
-                        .WithMany()
+                        .WithMany("Deductions")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1026,6 +1022,8 @@ namespace AuthenticationAPI.Migrations
                     b.Navigation("Allowances");
 
                     b.Navigation("Attendances");
+
+                    b.Navigation("Deductions");
 
                     b.Navigation("Payrolls");
 
