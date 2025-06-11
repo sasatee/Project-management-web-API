@@ -99,6 +99,7 @@ builder.Services.AddScoped<IRepository<Attendance>, Repository<Attendance>>();
 builder.Services.AddScoped<IRepository<Allowance>, Repository<Allowance>>();
 builder.Services.AddScoped<IRepository<Payrolls>, Repository<Payrolls>>();
 builder.Services.AddScoped<IRepository<LeaveAllocation>, Repository<LeaveAllocation>>();
+builder.Services.AddScoped<IRepository<Deduction>, Repository<Deduction>>();
 
 
 builder.Services.AddOpenApi();

@@ -82,7 +82,6 @@ namespace AuthenticationAPI.Controllers
 
             Allowance obj = new Allowance()
             {
-                Id = Guid.NewGuid(),
                 Description = dto.Description,
                 EffectiveDate = DateTime.UtcNow,
                 EmployeeId= dto.EmployeeId,
