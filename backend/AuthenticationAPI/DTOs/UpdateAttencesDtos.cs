@@ -2,15 +2,18 @@
 
 namespace AuthenticationAPI.DTOs
 {
-    public class AddAttendanceDTO {
-
-        [Required(ErrorMessage = "employee id is required")]
-        public Guid EmployeeId { get; set; }  
+    public class UpdateAttencesDtos
+    {
+     
         public DateTime Date { get; set; }
+        [Required]
         public TimeSpan CheckInTime { get; set; }
+        [Required]
         public TimeSpan CheckOutTime { get; set; }
+        [Required]
         public decimal OvertimeHours { get; set; }
-      
-    }
+ 
 
+
+    }
 }

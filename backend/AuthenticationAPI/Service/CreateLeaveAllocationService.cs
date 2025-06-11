@@ -6,7 +6,7 @@ using AuthenticationAPI.Repository.IRepository;
 namespace AuthenticationAPI.Service
 {
 
-    public class CreateLeaveAllocationService : ICreateLeaveAllocationService
+    public class CreateLeaveAllocationService : ILeaveAllocationService
         {
             private readonly ILeaveAllocationRepository _leaveAllocationRepository;
             private readonly ILeaveTypeRepository _leaveTypeRepository;

@@ -28,9 +28,12 @@ namespace AuthenticationAPI.Data
         public DbSet<SalaryProgression> SalaryProgressions { get; set; }
         public DbSet<CategoryGroup> CategoryGroups { get; set; }
         public DbSet<SalaryStep> SalarySteps { get; set; }
-        
 
-       
+        public DbSet<Allowance> Allowances { get; set; }
+        public DbSet<Deduction> Deductions { get; set; }
+
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -75,7 +78,7 @@ namespace AuthenticationAPI.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Configure EmployeeTraining relationship
+          
             modelBuilder.Entity<EmployeeTraining>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -102,9 +105,7 @@ namespace AuthenticationAPI.Data
                 .Property(a => a.OvertimeHours)
                 .HasPrecision(18, 2);
 
-            modelBuilder.Entity<JobTitle>()
-                .Property(j => j.BaseSalary)
-                .HasPrecision(18, 2);
+          
 
             modelBuilder.Entity<Payrolls>(entity =>
             {
@@ -138,12 +139,7 @@ namespace AuthenticationAPI.Data
                 .HasForeignKey<Employee>(e => e.AppUserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Configure relationships
-            //modelBuilder.Entity<SalaryProgression>()
-            //    .HasOne(s => s.CategoryGroup)
-            //    .WithMany(c => c.SalaryProgressions)
-            //    .HasForeignKey(s => s.CategoryGroupId)
-            //    .OnDelete(DeleteBehavior.Restrict);
+     
 
             modelBuilder.Entity<SalaryStep>()
                 .HasOne(s => s.CategoryGroup)

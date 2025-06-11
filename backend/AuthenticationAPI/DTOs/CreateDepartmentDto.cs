@@ -6,8 +6,8 @@ namespace AuthenticationAPI.Controllers
     {
         public class CreateDepartmentDto
         {
-            
-            [Required]
+
+            [Required(ErrorMessage = "DepartmentName is required")]
             public string DepartmentName { get; set; }
             public string HeadOfDepartment { get; set; }
         }

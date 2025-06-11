@@ -36,14 +36,14 @@ namespace AuthenticationAPI.Repository
             return await dbSet.FindAsync(id);
         }
 
-        public async Task<List<T>> GetAll()
+        public async Task<IEnumerable<T>> GetAll()
         {
             var list = await dbSet.ToListAsync();
             return list;
         }
 
 
-        public async Task<List<T>> GetAll(Expression<Func<T,bool>> filter)
+        public async Task<IEnumerable<T>> GetAll(Expression<Func<T,bool>> filter)
         {
             var list = await dbSet.AsQueryable().Where(filter).ToListAsync();
             return list;
