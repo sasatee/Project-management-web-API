@@ -17,6 +17,37 @@ namespace AuthenticationAPI.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
 
+            modelBuilder.Entity("AuthenticationAPI.Models.Allowance", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("EffectiveDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TypeName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("Allowances");
+                });
+
             modelBuilder.Entity("AuthenticationAPI.Models.AppUser", b =>
                 {
                     b.Property<string>("Id")
@@ -41,6 +72,9 @@ namespace AuthenticationAPI.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("GoogleId")
                         .HasColumnType("TEXT");
@@ -109,6 +143,37 @@ namespace AuthenticationAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CategoryGroups");
+                });
+
+            modelBuilder.Entity("AuthenticationAPI.Models.Deduction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("EffectiveDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TypeName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("Deductions");
                 });
 
             modelBuilder.Entity("AuthenticationAPI.Models.SalaryProgression", b =>
@@ -517,6 +582,9 @@ namespace AuthenticationAPI.Migrations
                     b.Property<Guid?>("LeaveRequestId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("NIC")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -689,6 +757,28 @@ namespace AuthenticationAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Trainings");
+                });
+
+            modelBuilder.Entity("AuthenticationAPI.Models.Allowance", b =>
+                {
+                    b.HasOne("Payroll.Model.Employee", "Employee")
+                        .WithMany("Allowances")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("AuthenticationAPI.Models.Deduction", b =>
+                {
+                    b.HasOne("Payroll.Model.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("AuthenticationAPI.Models.SalaryProgression", b =>
@@ -933,6 +1023,8 @@ namespace AuthenticationAPI.Migrations
 
             modelBuilder.Entity("Payroll.Model.Employee", b =>
                 {
+                    b.Navigation("Allowances");
+
                     b.Navigation("Attendances");
 
                     b.Navigation("Payrolls");

@@ -1,10 +1,8 @@
 ﻿using AuthenticationAPI.DTOs;
-using AuthenticationAPI.Models;
 using AuthenticationAPI.Repository.IRepository;
 using AuthenticationAPI.Service;
 using Microsoft.AspNetCore.Mvc;
 using Payroll.Model;
-using System.ComponentModel.DataAnnotations;
 
 namespace AuthenticationAPI.Controllers
 {
@@ -148,15 +146,4 @@ namespace AuthenticationAPI.Controllers
 
       
     }
-
-    public class UpdatePayrollDto
-    {
-            public DateTime PayDate { get; set; }
-            [Required]
-            public decimal BasicSalary { get; set; }
-            public decimal Allowances { get; set; }
-            public decimal Deductions { get; set; }
-            public decimal NetPay { get; set; }
-
-        }
 }

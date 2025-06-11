@@ -67,6 +67,10 @@ namespace AuthenticationAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateJob([FromBody] CreateJobDto Dtos)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             var jobTitle = new JobTitle
             {

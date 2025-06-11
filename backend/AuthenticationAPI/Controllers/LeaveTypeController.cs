@@ -18,12 +18,12 @@ namespace AuthenticationAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<LeaveTypeDto>>> GetLeaveTypes()
+        public async Task<ActionResult<IEnumerable<CreateLeaveTypeDto>>> GetLeaveTypes()
         {
           var LeaveTypes = await _repository.GetAllAsync();
 
             if(LeaveTypes == null) return NotFound();
-            var dto = LeaveTypes.Select(lt => new LeaveTypeDto
+            var dto = LeaveTypes.Select(lt => new ReponseLeaveType
             {
                 Name = lt.Name,
                 DefaultDays = lt.DefaultDays,
@@ -36,17 +36,17 @@ namespace AuthenticationAPI.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<LeaveTypeDto>> GetLeaveType(Guid id)
+        public async Task<ActionResult<CreateLeaveTypeDto>> GetLeaveType(Guid id)
         {
             var leaveType = await _repository.GetByIdAsync(id);
             if (leaveType == null) return NotFound();
 
-            var dto = new LeaveTypeDto()
+            var dto = new ReponseLeaveType()
             {
                 Id = leaveType.Id,
                 Name = leaveType.Name,
                 DefaultDays = leaveType.DefaultDays,
-            };
+            }; 
             return Ok(dto);
         }
 
@@ -54,9 +54,9 @@ namespace AuthenticationAPI.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<LeaveTypeDto>> CreateLeaveType([FromBody] LeaveTypeDto dto)
+        public async Task<ActionResult<CreateLeaveTypeDto>> CreateLeaveType([FromBody] CreateLeaveTypeDto dto)
         {
-            // Map the DTO to the LeaveType entity
+          
             var leaveTypeEntity = new LeaveType()
             {
                 DateCreated = DateTime.UtcNow,
@@ -66,11 +66,11 @@ namespace AuthenticationAPI.Controllers
                 Name = dto.Name,   
             };
 
-            // Save the LeaveType to the repository
+       
             await _repository.CreateAsync(leaveTypeEntity);
 
-            // Map the created LeaveType entity to a DTO
-            var leaveTypeDto = new LeaveTypeDto()
+          
+            var leaveTypeDto = new LeaveType()
             {
                 Id = leaveTypeEntity.Id,
                 Name = leaveTypeEntity.Name,
@@ -101,7 +101,7 @@ namespace AuthenticationAPI.Controllers
 
             leaveType.DefaultDays = updateLeaveDto.DefaultDays;
             leaveType.DateCreated = updateLeaveDto.DateCreated;
-            leaveType.DateModified = updateLeaveDto.DateModified;
+            leaveType.DateModified = DateTime.UtcNow;
             leaveType.Name = updateLeaveDto.Name;
 
             _leaveTypeRepository.Update(leaveType);

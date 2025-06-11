@@ -5,8 +5,8 @@ using AuthenticationAPI.Repository;
 using AuthenticationAPI.Repository.IRepository;
 using AuthenticationAPI.Service;
 using AuthenticationAPI.util;
+using Ecommerce.API.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -32,12 +32,12 @@ builder.Services.AddCors(options =>
 
 var JWTSetting = builder.Configuration.GetSection("JWTSetting");
 
-// Add services to the container.
 
-//add database 
-//sql server database
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//   options.UseNpgsql(builder.Configuration.GetConnectionString("NeonConnection")));
+
+
+
+
+
 
 //sql lite 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -74,12 +74,12 @@ builder.Services.AddAuthentication(options =>
 
 
 
-// Add services and repository  implementation
+// Add services and _repository  implementation
 builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository>();
-builder.Services.AddScoped<ICreateLeaveAllocationService, CreateLeaveAllocationService>();
+builder.Services.AddScoped<ILeaveAllocationService, CreateLeaveAllocationService>();
 
 //service 
 builder.Services.AddScoped<PayrollService>();
@@ -87,7 +87,7 @@ builder.Services.AddScoped<SeedSalaryForCategory>();
 builder.Services.AddTransient<GenerateToken, TokenGenerator>();
 
 
-//Generic repository implementation 
+//Generic _repository implementation 
 builder.Services.AddScoped<IRepository<Department>, Repository<Department>>();
 builder.Services.AddScoped<IRepository<Employee>, Repository<Employee>>();
 builder.Services.AddScoped<IRepository<JobTitle>, Repository<JobTitle>>();
@@ -96,7 +96,11 @@ builder.Services.AddScoped<IRepository<SalaryProgression>, Repository<SalaryProg
 builder.Services.AddScoped<IRepository<CategoryGroup>, Repository<CategoryGroup>>();
 builder.Services.AddScoped<IRepository<SalaryStep>, Repository<SalaryStep>>();
 builder.Services.AddScoped<IRepository<Attendance>, Repository<Attendance>>();
+builder.Services.AddScoped<IRepository<Allowance>, Repository<Allowance>>();
 builder.Services.AddScoped<IRepository<Payrolls>, Repository<Payrolls>>();
+builder.Services.AddScoped<IRepository<LeaveAllocation>, Repository<LeaveAllocation>>();
+builder.Services.AddScoped<IRepository<Deduction>, Repository<Deduction>>();
+
 
 builder.Services.AddOpenApi();
 
@@ -135,28 +139,31 @@ builder.Services.AddSwaggerGen(u =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-app.UseSwagger();
-app.UseSwaggerUI();
-app.MapOpenApi();
-app.MapScalarApiReference(options =>
+if (app.Environment.IsDevelopment())
 {
-    options
-     .WithDarkMode(true)
-    .WithDefaultHttpClient(ScalarTarget.Node, ScalarClient.HttpClient)
-    .WithDarkModeToggle(true)
-    .WithPreferredScheme("Bearer")
-    .WithHttpBearerAuthentication(bearer =>
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.MapOpenApi();
+    app.MapScalarApiReference(options =>
     {
-        bearer.Token = "Bearer [token]";
+        options
+         .WithDarkMode(true)
+        .WithDefaultHttpClient(ScalarTarget.Node, ScalarClient.HttpClient)
+        .WithDarkModeToggle(true)
+        .WithPreferredScheme("Bearer")
+        .WithHttpBearerAuthentication(bearer =>
+        {
+            bearer.Token = "Bearer [token]";
+        });
+        options.Authentication = new ScalarAuthenticationOptions
+        {
+            PreferredSecurityScheme = "Bearer"
+        };
     });
-    options.Authentication = new ScalarAuthenticationOptions
-    {
-        PreferredSecurityScheme = "Bearer"
-    };
-});
-
-// Use CORS before other middleware
+}
+//Middleware exceptions
+app.UseExceptionHandlingMiddleware();
+    
 app.UseCors("AllowAll"); // Changed from "AllowFrontend" to match the policy name
 //app.UseCors("AllowFrontend");
 

@@ -3,7 +3,7 @@ using AuthenticationAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Payroll.Model;
-using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace AuthenticationAPI.Controllers
 {
@@ -89,7 +89,7 @@ namespace AuthenticationAPI.Controllers
             if (attendence == null)
             {
 
-                return NotFound(new { isFalse = false, Message = $"attendence not found with {id}" });
+                return NotFound(new { isSucess = false, Message = $"attendence not found with {id}" });
 
             }
             attendence.CheckInTime = updateAttencesDtos.CheckInTime;
@@ -121,20 +121,5 @@ namespace AuthenticationAPI.Controllers
 
 
         }
-    }
-
-    public class UpdateAttencesDtos
-    {
-     
-        public DateTime Date { get; set; }
-        [Required]
-        public TimeSpan CheckInTime { get; set; }
-        [Required]
-        public TimeSpan CheckOutTime { get; set; }
-        [Required]
-        public decimal OvertimeHours { get; set; }
- 
-
-
     }
 }

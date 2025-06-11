@@ -5,8 +5,8 @@ namespace AuthenticationAPI.Repository.IRepository
 {
     public interface IRepository<T>  where T:class
     {
-        Task<List<T>> GetAll();
-        Task<List<T>> GetAll(Expression<Func<T, bool>> filter);
+        Task<IEnumerable<T>> GetAll();
+        Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> filter);
         Task<T> FindByIdAsync(Guid id);
         Task AddAsync(T entity);
         void Update(T entity);
