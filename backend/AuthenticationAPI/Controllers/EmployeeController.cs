@@ -131,8 +131,8 @@ namespace AuthenticationAPI.Controllers
                         {   
                             employeeModel.JobTitle.Id,
                             employeeModel.JobTitle.Title,
-                            employeeModel.JobTitle.BaseSalary,
-                            employeeModel.JobTitle.Grade
+                            
+                           
                         } : null
                     }
                 }

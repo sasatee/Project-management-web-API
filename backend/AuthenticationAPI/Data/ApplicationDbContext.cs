@@ -105,9 +105,7 @@ namespace AuthenticationAPI.Data
                 .Property(a => a.OvertimeHours)
                 .HasPrecision(18, 2);
 
-            modelBuilder.Entity<JobTitle>()
-                .Property(j => j.BaseSalary)
-                .HasPrecision(18, 2);
+          
 
             modelBuilder.Entity<Payrolls>(entity =>
             {

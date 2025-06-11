@@ -31,8 +31,6 @@ namespace AuthenticationAPI.Controllers
             {
                 Id = jobTitle.Id,
                 Title = jobTitle.Title,
-                BaseSalary = jobTitle.BaseSalary,
-                Grade = jobTitle.Grade,
                 Employees = jobTitle.Employees?.Select(e => new
                 {
                     e.Id,
@@ -75,8 +73,7 @@ namespace AuthenticationAPI.Controllers
             var jobTitle = new JobTitle
             {
                 
-                Grade = Dtos.Grade,
-                BaseSalary = Dtos.BaseSalary,
+              
                 Title = Dtos.Title
             };
             await _JobRepository.AddAsync(jobTitle);
@@ -109,8 +106,7 @@ namespace AuthenticationAPI.Controllers
             }
 
             JobTitle.Title = dto.Title ;
-            JobTitle.BaseSalary= dto.BaseSalary;
-            JobTitle.Grade = dto.Grade;
+          
 
             _JobRepository.Update(JobTitle);
             await _JobRepository.SaveChangesAsync();
