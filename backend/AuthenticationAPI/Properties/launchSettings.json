@@ -4,7 +4,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:4500",
+      "applicationUrl": "https://project-management-web-api-1.onrender.com/",
       "sslPort": 44376
     }
   },
@@ -15,7 +15,7 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
      // "launchUrl": "scalar/v1",
-      "applicationUrl": "http://localhost:4500",
+      "applicationUrl": "https://project-management-web-api-1.onrender.com/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -26,7 +26,7 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
      // "launchUrl": "scalar/v1",
-      "applicationUrl": "https://localhost:4500;http://localhost:4001",
+      "applicationUrl": "https://project-management-web-api-1.onrender.com/;http://localhost:4001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
