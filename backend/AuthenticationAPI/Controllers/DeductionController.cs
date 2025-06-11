@@ -34,8 +34,51 @@ namespace AuthenticationAPI.Controllers
 
         }
 
+        [HttpDelete("{id}")]
 
-     
+        public async Task<IActionResult> DeleteDeduction([FromRoute] Guid id)
+        {
+           Deduction? exist =  await _deductionRepository.FindByIdAsync(id);
+            if (exist  is null)
+            {
+                return NotFound();
+            }
+            await _deductionRepository.DeleteAsync(id);
+            await _deductionRepository.SaveChangesAsync();
+            return NoContent();
+
+
+        }
+
+
+        [HttpPut("{id}")]
+
+        public async Task<IActionResult> UpdateDeduction([FromRoute] Guid id, CreateDeductionRequestDto dto)
+        {
+            Deduction? exist = await _deductionRepository.FindByIdAsync(id);
+            if (exist is null)
+            {
+                return NotFound();
+            }
+
+            exist.EffectiveDate = DateTime.Now;
+            exist.ModifiedDate = DateTime.Now;
+            exist.TypeName = dto.TypeName;
+            exist.Remarks = dto.Remarks;
+            exist.Amount = dto.Amount;
+       
+
+
+             _deductionRepository.Update(exist);
+            await _deductionRepository.SaveChangesAsync();
+            return NoContent();
+
+
+        }
+
+
+
+
 
 
         [HttpPost]
